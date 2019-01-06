@@ -1,0 +1,121 @@
+body {position: relative; }
+/*Navbar ==========*/
+.navbar {background-color: transparent;}
+.top-nav-collapse { background-color: #424f95 !important;}
+.navbar .navbar-brand img {width: 150px; height: auto;}
+.nav-pills > li > a.active {
+  background-color: rgba(255, 255, 255, 0.2) !important;}
+@media (max-width: 600px) {
+ 	.navbar:not(.top-nav-collapse) {
+    	background: #424f95 !important;
+  }}
+/*Navbar ==========*/
+/*Title Image =====*/
+html, body, header, .view {	height: 100%;}
+.view {
+	background-image: url('../res/bg_1.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center center; }
+.rgba-gradient {
+	background: -webkit-linear-gradient(45deg, rgba(42, 27, 161, 0.5), rgba(29, 210, 177, 0.5) 100%);
+}
+/*Title Image =====*/
+#image {
+	height: auto;
+	max-width: 80%;
+	width: 400px;}
+.img_wrap {
+  display: table-cell;
+  vertical-align: middle;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  background-color: white;
+  border-radius: 50%;
+}
+.img_step {
+  width: 50px;
+  height: auto;
+}
+.step_box {
+  width: 120px;
+  justify-content: center;
+  margin: 10px;
+}
+/*Responsive Image size*/
+/*Jumbotron (Section) Padding*/
+#sec1, #sec2, #sec3 {
+  padding-top:90px; padding-bottom:90px;
+}
+/*Jumbotron (Section) Padding*/
+/*Section1*/
+#sec1 {
+  background-image: url('../res/bg_2.jpg');
+  background-size: cover;
+}
+/*Section1*/
+
+/*Section2*/
+/* Style the input fields */
+/* Hide all steps by default: */
+.tab {  display: none;}
+/* Make circles that indicate the steps of the form: */
+.step {
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbbbbb;
+  border: none; 
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+}
+/* Mark the active step: */
+.step.active { opacity: 1;}
+/*Card title style*/
+.card-header, .card-link,.card-link:hover {
+  background-color:white;
+  text-align:left;
+  color:black;
+  border:none;
+}
+.card-body {
+  padding-left:20px;
+  background-color: #ebebeb;
+}
+/* +,- Button */
+.menu_button {
+  position:absolute;
+  top:5px;
+  right:10px;
+  font-size:27px;
+  color:grey;
+  }
+[aria-expanded="false"] > .expanded, 
+[aria-expanded="true"] > .collapsed {display: none;}
+/*Apply Section*/
+
+/*Section3*/
+#sec3 {
+  background-image: url('../res/bg_3.jpg') ;
+  background-size: cover;
+  background-position: center center;
+}
+/*화면 축소시*/
+@media (max-width: 450px) {
+  .img_step {
+    width: 70px;
+    height: auto;
+  }
+  .step_box {
+    width: 100px;
+  }    }
+/*Group Section Card*/
+
+#sec2 .md-form label {
+  color: white;
+}
+#sec2 .form-control {
+  color: white;
+}

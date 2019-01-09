@@ -1,0 +1,37 @@
+.bg_cyan { background-color: #009688; }
+.t20 { font-size: 20px; }
+.t17 { font-size: 17px; }
+.shirink { font-family: 'Shrikhand', cursive; }
+
+
+body {
+	height: 100%;
+	overflow: hidden;
+	padding-top: 50px;
+}
+.main, .col1, .col2{
+	margin: 10px;
+}
+
+.cart {
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	max-height: 50px;
+	transition: 0.5s ease-out;
+}
+
+.cart_toggle {
+	max-height:70%;
+	transition: 0.5s ease-out;
+} 
+
+.c_col1, .c_col2 {
+	height: 40vh;
+	overflow: auto;
+}
+
+.wrap {
+	max-height: 60vh;
+	overflow: auto;
+}

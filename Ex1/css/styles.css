@@ -1,0 +1,67 @@
+/*BODY ==============================*/
+body {
+	background-color: #f3e7e9;
+	word-break: keep-all;
+	word-wrap: break-word;
+	 /*Font Type*/
+}
+/*color-variables ======= */
+:root {
+	--theme_hl1	: #fc4a1a;
+	--theme_hl2	: #f7b733;
+	--theme_tt	: #008080;
+	--theme_ct	: #4abdac;
+	--theme_bg	: #dfdce3;
+	--lightgreen: #57c562;
+}
+/*====================== */
+/*font-size ============ */
+.t11 {	font-size: 11px;}
+.t13 {	font-size: 13px;}
+.t15 {	font-size: 15px;}
+.t17 {	font-size: 17px;}
+.t20 {	font-size: 20px;}
+.t25 {	font-size: 25px;}
+.t30 {	font-size: 30px;}
+.t35 {	font-size: 35px;}
+/*====================== */
+/*font-color =========== */
+.white 		{ color: white; }
+.black		{ color: black; }
+.hl1 		{ color: var(--theme_hl1); }
+.hl2 		{ color: var(--theme_hl2); }
+.tt 		{ color: var(--theme_tt); }
+.ct 		{ color: var(--theme_ct); }
+.bg 		{ color: var(--theme_bg); }
+/*====================== */
+/*bg-color ============= */
+.bg_white	{ background-color: white; }
+.bg_tt	{ background-color: var(--theme_tt); }
+.bg_ct	{ background-color: var(--theme_ct); }
+.bg_hl1	{ background-color: var(--theme_hl1); }
+.bg_hl2	{ background-color: var(--theme_hl2); }
+.bg_bg	{ background-color: var(--theme_bg); }
+.bg_lightgreen	{ background-color: var(--lightgreen); }
+/*====================== */
+/*height =============== */
+/*====================== */
+/*width ================ */
+.w150 { width: 150px; }
+.w300 { width: 300px; }
+/*====================== */
+/*button =============== */
+/*====================== */
+/*table================= */
+/*====================== */
+/*navbar================ */
+/*/navbar===============*/
+/*Dialog (Modal)========*/
+/*/Dialog (Modal)=======*/
+
+/*title===========*/
+.title {
+	height: 60px;
+	display: flex;
+	align-items: center;
+}
+/*/title==========*/

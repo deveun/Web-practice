@@ -7,10 +7,14 @@
 body {
 	height: 100%;
 	overflow: hidden;
-	padding-top: 50px;
 }
 .main, .col1, .col2{
 	margin: 10px;
+}
+
+.main {
+	overflow: auto;
+	height: 80vh;
 }
 
 .cart {

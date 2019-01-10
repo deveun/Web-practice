@@ -61,10 +61,10 @@ $(document).ready(function() {
 			row += td;
 			row += "<td><span class=\"badge badge-pill badge-danger\">x</span></td></tr>";
 			$('.c_s_table').append(row);
+			/* calculate cart service total price*/
+			s_sum += parseInt(cur_tr.children().eq(1).text());
+			update_total();
 		}
-		/* calculate cart service total price*/
-		s_sum += parseInt(cur_tr.children().eq(1).text());
-		update_total();
 	});
 	/*Merchandise Cart Click Event (Delete)*/
 	$(".c_m_table tbody").on("click", "tr", function() {

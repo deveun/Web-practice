@@ -1,0 +1,54 @@
+body {
+	display: table-cell;
+	vertical-align: middle;
+	height: 100vh;
+	width: 100vw;
+	/*Gradient Bg*/
+	background-image: linear-gradient(to bottom left, #ECC9C7, white);
+	background-repeat: no-repeat;
+    background-attachment: fixed;
+    //background-color: lightgrey;
+}
+.form_sec, .carousel_sec {
+	height: 350px;
+}
+
+.main_sec {
+	padding: 0px;
+	margin: 20px;
+	border-radius: 20px;
+	overflow: hidden;
+	margin-left: auto;
+	margin-right: auto;
+
+}
+
+.title {
+	color: #ECC9C7;
+	font-weight: bold;
+	font-size: 24px;
+}
+
+/*Carousel items*/
+.item1 {
+	background-image: url("../res/bg_1.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center center;
+	height: 350px;
+}
+.item2 {
+	background-image: url("../res/bg_2.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center center;
+	height: 350px;
+}
+.item3 {
+	background-image: url("../res/bg_3.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center center;
+	height: 350px;
+}
+/*Carousel items*/

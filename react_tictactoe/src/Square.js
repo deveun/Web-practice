@@ -2,21 +2,18 @@ import React, { Component } from 'react';
 import './index.css'
 
 class Square extends Component {
-	state = {
-		mark: ''
-	}
 	//CLick Handler
 	handleClick= () => {
-		console.log("CALLED");
-		const {mark} = this.state;
-		this.setState({mark: 'X'});
+		const {item, onMark} = this.props;
+		if(!item.value)
+			onMark(item.id);
 	}
 
 	render() {
-		const {mark} = this.state;
+		const {item} = this.props;
 		return (
 			<button className="square" onClick={this.handleClick}>
-			{mark}
+			{item.value}
 			</button>
 			);
 	}

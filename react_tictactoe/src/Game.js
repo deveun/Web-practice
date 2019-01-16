@@ -1,3 +1,6 @@
+//			*** REFERENCE ***			//
+//	https://brunch.co.kr/@hee072794/72	//
+
 import React, { Component } from 'react';
 import Board from './Board';
 import './index.css';

@@ -1,0 +1,16 @@
+body {
+	background-color: #ECC9C7;
+
+	display: table-cell;
+	vertical-align: middle;
+	justify-content: center;
+	height: 100vh;
+	width: 100vw;
+}
+
+.table td {	vertical-align: middle;}
+.table .d { vertical-align: top; }
+
+.pagination .page-item.active .page-link {
+  background-color: #2bbbad;
+}

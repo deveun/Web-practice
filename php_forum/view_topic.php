@@ -18,17 +18,10 @@ $result=mysqli_query($conn, $sql);
 $rows=mysqli_fetch_array($result);
 $view=$rows['view'];
 
-// (조회수 0일때)if have no counter value set counter = 1
-if(empty($view)){
-	$view=1;
-	$sql2="INSERT INTO $tbl_name(view) VALUES('$view') WHERE id='$id'";
-	$result2=mysqli_query($conn, $sql2);
-}
-
 // (조회수)count more value
 $addview=$view+1;
-$sql3="UPDATE $tbl_name SET view='$addview' WHERE id='$id'";
-$result3=mysqli_query($conn, $sql3);
+$sql2="UPDATE $tbl_name SET view='$addview' WHERE id='$id'";
+$result2=mysqli_query($conn, $sql2);
 
 // Check data for prev / next button
 $sql4="SELECT * FROM $tbl_name WHERE id > '$id'";

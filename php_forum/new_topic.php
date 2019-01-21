@@ -1,43 +1,7 @@
-<?php
-
-$host="localhost"; // Host name 
-$username="root"; // Mysql username 
-$password="1234"; // Mysql password 
-$db_name="myforum"; // Database name 
-$tbl_name="fquestions"; // Table name 
-
-// Connect to server and select databse.
-$conn = mysqli_connect("$host", "$username", "$password")or die("cannot connect"); 
-mysqli_select_db($conn, $db_name)or die("cannot select DB");
-
-// get data that sent from form 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	$topic = test_input($_POST["topic"]);
-	$detail = $_POST["detail"];
-	$name = test_input($_POST["name"]);
-	$email = test_input($_POST["email"]);
-	$datetime=date("y/m/d h:i A"); //create date time
-
-	$sql="INSERT INTO $tbl_name(topic, detail, name, email, datetime)VALUES('$topic', '$detail', '$name', '$email', '$datetime')";
-	
-	$result=mysqli_query($conn, $sql);
-	echo "
-	<script> 
-	alert('작성완료');
-	document.location.href='main_forum.php';
-	</script>"; 
-
-}
-
-function test_input($data) {
-	$data = trim($data);
-	$data = stripslashes($data);
-	$data = htmlspecialchars($data);
-	return $data;
-}
-mysqli_close($conn);
-?>
-
+<!-- *** REFERENCE *** ========================== -->
+<!-- File Upload -->
+<!-- http://palpit.tistory.com/331 -->
+<!-- php _FILES / php pathinfo() -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,7 +33,8 @@ mysqli_close($conn);
 		<table class="table w-8 table-sm table-borderless mb-0">
 			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
 			<!-- !!! Must use htemlspecialchars !!! -->
-			<form id="form1" name="form1" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+			<!-- enctype="multipart/form-data" ==> File Upload -->
+			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="create.php">
 				<thead>
 					<tr>
 						<td class="text-center" colspan="3"><b>새 글 작성하기</b></td>
@@ -90,6 +55,11 @@ mysqli_close($conn);
 						<td class="text-right"><b>이메일</b></td>
 						<td>:</td>
 						<td><input class="form-control form-control-sm" name="email" type="text" id="email" autocomplete="off" required/></td>
+					</tr>
+					<tr>
+						<td class="text-right"><b>파일 첨부</b></td>
+						<td>:</td>
+						<td><input name="file" id="file" type="file"/></td>
 					</tr>
 					<tr>
 						<td class="text-right d"><b>내용</b></td>
@@ -116,7 +86,6 @@ mysqli_close($conn);
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umdpopper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 	<!-- Bootstrap 4.1.3 ========================================== -->
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-	te
 	<!-- /JavaScript CDN LIST ================================== -->
 	<script>
 		// Replace the <textarea id="editor1"> with a CKEditor

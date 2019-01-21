@@ -5,6 +5,7 @@ $username="root"; // Mysql username
 $password="1234"; // Mysql password 
 $db_name="myforum"; // Database name 
 $tbl_name="fquestions"; // Table name 
+$upload_tbl_name="upload_file";
 
 // Connect to server and select databse.
 $conn = mysqli_connect("$host", "$username", "$password")or die("cannot connect"); 
@@ -13,10 +14,18 @@ mysqli_select_db($conn, $db_name)or die("cannot select DB");
 
 // get value of id that sent from address bar 
 $id=$_GET['id'];
-$sql="SELECT * FROM $tbl_name WHERE id='$id'";
+//$sql="SELECT * FROM $tbl_name WHERE id='$id'";
+$sql= "SELECT $tbl_name.*, $upload_tbl_name.* FROM $tbl_name INNER JOIN $upload_tbl_name ON $tbl_name.file_id=$upload_tbl_name.file_id WHERE id='$id'" ;
 $result=mysqli_query($conn, $sql);
 $rows=mysqli_fetch_array($result);
 $view=$rows['view'];
+
+// // (조회수 0일때)if have no counter value set counter = 1
+// if(empty($view)){
+// 	$view=1;
+// 	$sql2="INSERT INTO $tbl_name(view) VALUES('$view') WHERE id='$id'";
+// 	$result2=mysqli_query($conn, $sql2);
+// }
 
 // (조회수)count more value
 $addview=$view+1;
@@ -72,7 +81,10 @@ mysqli_close($conn);
 					<td class="text-right"><?php echo $rows['datetime']; ?></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="border-bottom border-dark">작성자: <?php echo $rows['name']; ?></td>
+					<td colspan="2">작성자: <?php echo $rows['name']; ?></td>
+				</tr>
+				<tr>
+					<td colspan="2" class="border-bottom border-dark">첨부파일:&nbsp;<a class="file_info" href="<?php echo $rows['file_dir']; ?>" download> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?></a></td>
 				</tr>
 			</thead>
 			<tbody>
@@ -160,6 +172,9 @@ mysqli_close($conn);
 			//  	$("#next_btn").prop('disabled',false);
 			// if(<?php echo isset($rows_lt['id'])?>)
 			//  	$("#prev_btn").prop('disabled',false);
+
+			if(<?php echo $rows['file_id'];?> == 0)
+				$('.file_info').hide();
 
 			$("#next_btn").click( function () {
 				location.href='view_topic.php?id=<?php echo $rows_gt['id']; ?>';

@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$file_id = 0;
 	if($uploadOk == 1){
 		$file_id = md5(uniqid(rand(), true));
-		$sql="INSERT INTO $upload_tbl_name VALUES('$file_id', '$target_realname' , '$target_file')";
+		$sql="INSERT INTO $upload_tbl_name VALUES('$file_id', '$target_file')";
 		$result=mysqli_query($conn, $sql);
 	}
 	

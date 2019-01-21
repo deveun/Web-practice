@@ -10,6 +10,7 @@ $tbl_name="fquestions"; // Table name
 $conn = mysqli_connect("$host", "$username", "$password")or die("cannot connect"); 
 mysqli_select_db($conn, $db_name)or die("cannot select DB");
 
+
 // get value of id that sent from address bar 
 $id=$_GET['id'];
 $sql="SELECT * FROM $tbl_name WHERE id='$id'";
@@ -41,30 +42,6 @@ $rows_lt=mysqli_fetch_array($result5);
 // echo isset($rows_gt['id']);
 // echo isset($rows_lt['id']);
 
-//Update data
-// get data that sent from form 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	$topic = test_input($_POST["topic"]);
-	$name = test_input($_POST["name"]);
-	$detail = test_input($_POST["detail"]);
-	$id = test_input($_POST["id"]);
-	//$datetime=date("y/m/d h:i A"); //create date time
-	$sql5="UPDATE $tbl_name SET topic='$topic', name='$name', detail='$detail' WHERE id='$id'";
-	$result5=mysqli_query($conn, $sql5);
-	echo "
-	<script> 
-	alert('수정완료');
-	document.location.href='main_forum.php';
-	</script>"; 
-}
-
-function test_input($data) {
-	$data = trim($data);
-	$data = stripslashes($data);
-	$data = htmlspecialchars($data);
-	return $data;
-}
-
 mysqli_close($conn);
 ?>
 
@@ -84,6 +61,8 @@ mysqli_close($conn);
 
 	<!-- Icon Pack Download (https://fontawesome.com/)========== -->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+	<!-- CKeditor ============================================== -->
+	<script src="ckeditor/ckeditor.js"></script>
 
 </head>
 <!-- /HEAD ==================================================== -->
@@ -115,17 +94,17 @@ mysqli_close($conn);
 					<td class="text-right">
 						<button class="btn btn-sm btn-default" id="update_btn">수정</button>
 						<button class="btn btn-sm btn-default" onclick="delFunc()">삭제</button>
-						<button class="btn btn-sm btn-default" onclick="goBack()">글목록</button>
+						<button class="btn btn-sm btn-default" onclick="location.href = 'main_forum.php'">글목록</button>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 		<!-- /View Table -->
 		<!-- Update Table -->
-		<table class="update_table table table-sm table-borderless mb-0" style="display: none;">
+		<table class="update_table table table-sm table-borderless mb-0" style="display: none">
 			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
 			<!-- !!! Must use htemlspecialchars !!! -->
-			<form id="form1" name="form1" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+			<form id="form1" name="form1" method="post" action="edit.php">
 				<thead>
 					<tr>
 						<td width="10%">제목: </td>
@@ -141,7 +120,7 @@ mysqli_close($conn);
 				<tbody>
 					<tr>
 						<td colspan="3">
-							<textarea class="form-control" name="detail" rows="3" id="detail" autocomplete="off"><?php echo $rows['detail']; ?></textarea>
+							<textarea class="form-control" name="detail" rows="3" id="ckeditor" autocomplete="off"><?php echo $rows['detail']; ?></textarea>
 						</td>
 						<td class="d-none">
 							<input class="form-control" name="id" type="text" id="id" value= "<?php echo $rows['id']; ?>" autocomplete="off"/></td>
@@ -174,12 +153,14 @@ mysqli_close($conn);
 
 		<script>
 
-			function goBack() {	window.history.back()	}
+			// Replace the <textarea id="editor1"> with a CKEditor
+    	// instance, using default configuration.
+    	CKEDITOR.replace('ckeditor');
 
-			function delFunc() {
-				alert("정말로 삭제하시겠습니까?");
-				location.href='delete_topic.php?id=<?php echo $rows['id']; ?>';
-			}
+    	function delFunc() {
+    		alert("정말로 삭제하시겠습니까?");
+    		location.href='delete.php?id=<?php echo $rows['id']; ?>';
+    	}
 
 			// NOT SOLVED !!!!!!!!!!!!diabled button!!!!!!!!!!!!!!!!
 			// if(<?php echo isset($rows_gt['id'])?>)

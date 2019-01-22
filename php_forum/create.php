@@ -39,13 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		//tmp_name => file temporary save directory
 		$check = getimagesize($_FILES["file"]["tmp_name"]);
 		/////////////VALIDATION///////////////
-		if($check !== false) {
-			echo "File is an image - " . $check["mime"] . ".";
-			$uploadOk = 1;
-		} else {
-			echo "<script> alert('File is not an image.');</script>";
-			$uploadOk = 0;
-		}
 		// Check if file already exists
 		$exist_flag = 0;
 		$i = 0;
@@ -61,11 +54,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			}
 		//echo "<script> alert("Sorry, file already exists.");</script>";
 		}
-		// Check file size
-		if ($_FILES["file"]["size"] > 500000) {
-			echo "<script> alert('Sorry, your file is too large.');</script>";
-			$uploadOk = 0;
-		}
+		//check file is image or not
+		// if($check !== false) {
+		// 	echo "File is an image - " . $check["mime"] . ".";
+		// 	$uploadOk = 1;
+		// } else {
+		// 	echo "<script> alert('File is not an image.');</script>";
+		// 	$uploadOk = 0;
+		// }
+		// // Check file size
+		// if ($_FILES["file"]["size"] > 500000) {
+		// 	echo "<script> alert('Sorry, your file is too large.');</script>";
+		// 	$uploadOk = 0;
+		// }
+		
 		// Allow certain file formats
 		/*if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"	&& $imageFileType != "gif" ) {
 			echo "<script> alert('Sorry, only JPG, JPEG, PNG & GIF files are allowed.');	</script>";
@@ -75,14 +77,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		// Check if $uploadOk is set to 0 by an error
 		// Check if you can upload file or not
 		if ($uploadOk == 0) {
-			echo "<script> alert('Sorry, your file was not uploaded.');	</script>";
+			echo "<script> 
+			alert('Sorry, your file was not uploaded.');
+			document.location.href='main_forum.php'; </script>";
+			return;
 		}
 		// if everything is ok, try to <<<UPLOAD>>> file (dir, destination)
 		else {
 			if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
 				echo "The file ". basename( $_FILES["file"]["name"]). " has been uploaded.";
 			} else {
-				echo "<script> alert('Sorry, there was an error uploading your file.');	</script>";
+				echo "<script> alert('Sorry, there was an error uploading your file.');	document.location.href='main_forum.php';</script>";
+				return;
 			}
 		}
 	}

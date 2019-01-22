@@ -79,7 +79,7 @@ function test_input($data) {
 // Start looping table row
 				while($rows = mysqli_fetch_array($result)){
 					?>
-					<tr style="display: none" onClick = "location.href='view_topic.php?id=<?php echo $rows['id']; ?>'">
+					<tr style="display: none" onClick = "location.href='view_topic.php?id=<?php echo $rows['id'];?>'">
 						<td><?php echo $num++; ?></td>
 						<td><?php echo $rows['topic']; ?></td>
 						<td><?php echo $rows['name']; ?></td>

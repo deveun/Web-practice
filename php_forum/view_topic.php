@@ -72,6 +72,7 @@ mysqli_close($conn);
 <!-- ========================================================== -->
 <!-- BODY  ==================================================== -->
 <body>
+
 	<div class="container white p-1">
 		<!-- View Table -->
 		<table class="view_table table table-sm table-borderless mb-0">
@@ -109,7 +110,7 @@ mysqli_close($conn);
 		<table class="update_table table table-sm table-borderless mb-0" style="display: none">
 			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
 			<!-- !!! Must use htemlspecialchars !!! -->
-			<form id="form1" name="form1" method="post" action="edit.php">
+			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="edit.php">
 				<thead>
 					<tr>
 						<td >제목 </td>
@@ -126,7 +127,10 @@ mysqli_close($conn);
 					<tr>
 						<td>첨부파일</td>
 						<td>:</td>
-						<td><a class="file_info" id="del_file"> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?>&nbsp; ...<i class="far fa-trash-alt"></i></a><input name="file" id="file" type="file" style="display: none;" /></td>
+						<td><a class="file_info" id="del_file"> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?>&nbsp; ...<i class="far fa-trash-alt"></i></a><input name="file" id="file" type="file" style="visibility: hidden;" /></td>
+						<td class="d-none">
+							<input class="form-control" name="delOk" type="number" id="delOk" value="0"/>
+						</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -135,33 +139,34 @@ mysqli_close($conn);
 							<textarea class="form-control" name="detail" rows="3" id="ckeditor" autocomplete="off"><?php echo $rows['detail']; ?></textarea>
 						</td>
 						<td class="d-none">
-							<input class="form-control" name="id" type="text" id="id" value= "<?php echo $rows['id']; ?>" autocomplete="off"/></td>
-						</tr>
-						<tr>
-							<td colspan="4" class="text-right">
-								<button class="btn btn-sm btn-default" type="submit" name="Submit">확인</button>
-								<button class="btn btn-sm btn-default" type="button" id="cancel_btn">취소</button>
-								<button class="btn btn-sm btn-default" type="button" onclick="location.href = 'main_forum.php'">글목록</button>
-							</td>
-						</tr>
-					</tbody>
-				</form>
-			</table>
-			<!-- Update Table -->
-		</div>
+							<input class="form-control" name="id" type="text" id="id" value= "<?php echo $rows['id']; ?>"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="text-right">
+							<button class="btn btn-sm btn-default" type="submit" name="Submit">확인</button>
+							<button class="btn btn-sm btn-default" type="button" id="cancel_btn">취소</button>
+							<button class="btn btn-sm btn-default" type="button" onclick="location.href = 'main_forum.php'">글목록</button>
+						</td>
+					</tr>
+				</tbody>
+			</form>
+		</table>
+		<!-- Update Table -->
+	</div>
 
-		<!-- ========================================================== -->
-		<!-- JavaScript CDN LIST ====================================== -->
-		<!-- Placed at the end of the document so the pages load faster -->
-		<!-- Jquery 3.2.1 ============================================= -->
-		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-		<!-- Popper.js 1.14.3 ========================================= -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umdpopper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-		<!-- Bootstrap 4.1.3 ========================================== -->
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-		<!-- /JavaScript CDN LIST ================================== -->
+	<!-- ========================================================== -->
+	<!-- JavaScript CDN LIST ====================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<!-- Jquery 3.2.1 ============================================= -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<!-- Popper.js 1.14.3 ========================================= -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umdpopper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<!-- Bootstrap 4.1.3 ========================================== -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	<!-- /JavaScript CDN LIST ================================== -->
 
-		<script>
+	<script>
 
 			// Replace the <textarea id="editor1"> with a CKEditor
     	// instance, using default configuration.
@@ -189,15 +194,18 @@ mysqli_close($conn);
 			// if(<?php echo isset($rows_lt['id'])?>)
 			//  	$("#prev_btn").prop('disabled',false);
 
+			//file link visibility
 			if('<?php echo $rows['file_id'];?>' == '0')
 			{
 				$('.file_info').hide();
-				$('#file').show();
+				$('#file').attr('style','visibility:visible');
 			}
 
+			//delete attached file
 			$("#del_file").click( function () {
 				$('.file_info').hide();
-				$('#file').show();
+				$('#file').attr('style','visibility:visible');
+				$('#delOk').val(1);
 			});
 
 			$("#next_btn").click( function () {

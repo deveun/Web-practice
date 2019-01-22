@@ -98,7 +98,7 @@ mysqli_close($conn);
 					</td>
 					<td class="text-right">
 						<button class="btn btn-sm btn-default" id="update_btn">수정</button>
-						<button class="btn btn-sm btn-default" onclick="delFunc()">삭제</button>
+						<button class="btn btn-sm btn-default" id="delete_btn">삭제</button>
 						<button class="btn btn-sm btn-default" onclick="location.href = 'main_forum.php'">글목록</button>
 					</td>
 				</tr>
@@ -112,28 +112,33 @@ mysqli_close($conn);
 			<form id="form1" name="form1" method="post" action="edit.php">
 				<thead>
 					<tr>
-						<td width="10%">제목: </td>
+						<td >제목 </td>
+						<td>:</td>
 						<td><input class="form-control" name="topic" type="text" id="topic" value= "<?php echo $rows['topic']; ?>" autocomplete="off"/>
 						</td>
 						<td class="text-right"><?php echo $rows['datetime']; ?></td>
 					</tr>
 					<tr>
-						<td width="10%">작성자: </td>
+						<td >작성자 </td>
+						<td>:</td>
 						<td><input class="form-control" name="name" type="text" id="name" value= "<?php echo $rows['name']; ?>" autocomplete="off"/></td>
+					</tr>
+					<tr>
+						<td>첨부파일</td>
+						<td>:</td>
+						<td><a class="file_info" id="del_file"> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?>&nbsp; ...<i class="far fa-trash-alt"></i></a><input name="file" id="file" type="file" style="display: none;" /></td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="3">
+						<td colspan="4">
 							<textarea class="form-control" name="detail" rows="3" id="ckeditor" autocomplete="off"><?php echo $rows['detail']; ?></textarea>
 						</td>
 						<td class="d-none">
 							<input class="form-control" name="id" type="text" id="id" value= "<?php echo $rows['id']; ?>" autocomplete="off"/></td>
 						</tr>
 						<tr>
-							<td colspan="2">
-							</td>
-							<td class="text-right">
+							<td colspan="4" class="text-right">
 								<button class="btn btn-sm btn-default" type="submit" name="Submit">확인</button>
 								<button class="btn btn-sm btn-default" type="button" id="cancel_btn">취소</button>
 								<button class="btn btn-sm btn-default" type="button" onclick="location.href = 'main_forum.php'">글목록</button>
@@ -162,10 +167,21 @@ mysqli_close($conn);
     	// instance, using default configuration.
     	CKEDITOR.replace('ckeditor');
 
-    	function delFunc() {
-    		alert("정말로 삭제하시겠습니까?");
-    		location.href='delete.php?id=<?php echo $rows['id']; ?>';
-    	}
+    	$("#delete_btn").click( function () {
+    		if(confirm("정말로 삭제하시겠습니까?"))
+    			location.href='delete.php?id=<?php echo $rows['id']; ?>';
+    	});
+
+    	//update button click -> change view
+    	$("#update_btn").click( function () {
+    		$(".view_table").hide();
+    		$(".update_table").show();
+    	});
+
+			//cancel button click
+			$("#cancel_btn").click( function () {
+				location.href="view_topic.php?id=<?php echo $id; ?>";
+			});
 
 			// NOT SOLVED !!!!!!!!!!!!diabled button!!!!!!!!!!!!!!!!
 			// if(<?php echo isset($rows_gt['id'])?>)
@@ -173,8 +189,16 @@ mysqli_close($conn);
 			// if(<?php echo isset($rows_lt['id'])?>)
 			//  	$("#prev_btn").prop('disabled',false);
 
-			if(<?php echo $rows['file_id'];?> == 0)
+			if('<?php echo $rows['file_id'];?>' == '0')
+			{
 				$('.file_info').hide();
+				$('#file').show();
+			}
+
+			$("#del_file").click( function () {
+				$('.file_info').hide();
+				$('#file').show();
+			});
 
 			$("#next_btn").click( function () {
 				location.href='view_topic.php?id=<?php echo $rows_gt['id']; ?>';
@@ -183,9 +207,7 @@ mysqli_close($conn);
 			$("#prev_btn").click( function () {
 				location.href='view_topic.php?id=<?php echo $rows_lt['id']; ?>';
 			});
-
 		</script>
-		<script src="js/view_topic.js?ver=14"></script>
 		<!-- ======================================================= -->
 	</body>
 	</html>

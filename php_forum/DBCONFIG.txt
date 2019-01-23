@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- 생성 시간: 19-01-21 17:32
+-- 생성 시간: 19-01-23 10:11
 -- 서버 버전: 10.1.37-MariaDB
 -- PHP 버전: 7.3.0
 
@@ -30,24 +30,27 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `fquestions` (
   `id` int(4) NOT NULL,
+  `category` varchar(20) NOT NULL,
   `topic` varchar(255) NOT NULL DEFAULT '',
   `detail` longtext NOT NULL,
   `name` varchar(65) NOT NULL DEFAULT '',
   `email` varchar(65) NOT NULL DEFAULT '',
   `datetime` varchar(25) NOT NULL DEFAULT '',
   `view` int(4) NOT NULL DEFAULT '0',
-  `file_id` varchar(255) NOT NULL DEFAULT '1'
+  `file_id` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- 테이블의 덤프 데이터 `fquestions`
 --
 
-INSERT INTO `fquestions` (`id`, `topic`, `detail`, `name`, `email`, `datetime`, `view`, `file_id`) VALUES
-(96, 'a', '<p>aaaa</p>\r\n', 'aa', 'aa', '19/01/21 05:16 PM', 1, '0'),
-(97, 'aaa', '<p>aaa</p>\r\n', 'aa', 'aa', '19/01/21 05:27 PM', 0, '201fe002e7b6797910297cdec85c78d0'),
-(99, 'asdas', '<p>dasdasd</p>\r\n', 'asd', 'asd', '19/01/21 05:29 PM', 0, '0'),
-(100, 'aa', '<p style=\"text-align:right\"><span style=\"background-color:#2ecc71\">as das d</span></p>\r\n\r\n<p style=\"text-align:right\">&nbsp;</p>\r\n\r\n<p style=\"text-align:center\"><span style=\"font-size:16px\"><s><span style=\"background-color:#f1c40f\">asdfgh&nbsp;&nbsp;<img alt=\"angel\" src=\"http://localhost/ckeditor/plugins/smiley/images/angel_smile.png\" style=\"height:23px; width:23px\" title=\"angel\" /></span></s></span></p>\r\n', 'aaa', 'aaaa', '19/01/21 05:31 PM', 1, '0');
+INSERT INTO `fquestions` (`id`, `category`, `topic`, `detail`, `name`, `email`, `datetime`, `view`, `file_id`) VALUES
+(4, 'music', 'music', '<p>ë®¤ì§</p>\r\n', 'ë®¤ì§', 'ë®¤ì§', '19/01/23 09:16:12', 31, 'c9bedd3e3d772d902728e6ff054e9b77'),
+(5, 'news', 'ë‰´ìŠ¤', '<p>ë‰´ë‰´ë‰´ë‰¸</p>\r\n', 'ë‰´ìŠ¤', 'ë‰´ìŠ¤', '19/01/23 09:16:48', 32, '0'),
+(6, 'news', 'ss', '<p>ë‰´ë‰´ë‰´ë‰¸</p>\r\n', 'ë‰´ë‰´', 'ë‰¸ë‰´ã… ã„´', '19/01/23 09:39:17', 36, '0'),
+(7, 'book', 'ì±…ì±…ì±…', '<p>ì±… boobobbob</p>\r\n', 'ì±…ì±…', 'ì±…', '19/01/23 10:04:10', 4, '0'),
+(8, 'movie', 'movie', '<p>sdasga</p>\r\n', 'momom', 'mo', '19/01/23 10:04:27', 16, '0'),
+(9, 'book', 'bbb', '<p>bbbbb</p>\r\n', 'bb', 'bb', '19/01/23 10:10:11', 2, '3695348790ca019072782d9c7d92455b');
 
 -- --------------------------------------------------------
 
@@ -57,7 +60,6 @@ INSERT INTO `fquestions` (`id`, `topic`, `detail`, `name`, `email`, `datetime`, 
 
 CREATE TABLE `upload_file` (
   `file_id` varchar(255) NOT NULL,
-  `file_name` varchar(255) DEFAULT NULL,
   `file_dir` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -65,9 +67,10 @@ CREATE TABLE `upload_file` (
 -- 테이블의 덤프 데이터 `upload_file`
 --
 
-INSERT INTO `upload_file` (`file_id`, `file_name`, `file_dir`) VALUES
-('0', 'null', 'null'),
-('201fe002e7b6797910297cdec85c78d0', 'image', 'uploads/image0.jpg');
+INSERT INTO `upload_file` (`file_id`, `file_dir`) VALUES
+('0', 'no_file'),
+('3695348790ca019072782d9c7d92455b', 'uploads/sample1_l.jpg'),
+('c9bedd3e3d772d902728e6ff054e9b77', 'uploads/sam.jpg');
 
 --
 -- 덤프된 테이블의 인덱스
@@ -94,7 +97,7 @@ ALTER TABLE `upload_file`
 -- 테이블의 AUTO_INCREMENT `fquestions`
 --
 ALTER TABLE `fquestions`
-  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- 덤프된 테이블의 제약사항

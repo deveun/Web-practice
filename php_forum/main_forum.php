@@ -1,35 +1,44 @@
 <!-- ***REFERENCE *** --> 
 <!-- http://pixelcode.co.uk/tutorials/php/simple-php-forum/ -->
+<!-- Global Variables (SESSION): http://www.tizag.com/phpT/phpsessions.php -->
 <!-- Recent version than PHP7 : mysql... -> mysqli... -->
 
-<?php
 
-$host="localhost"; // Host name 
-$username="root"; // Mysql username 
-$password="1234"; // Mysql password 
-$db_name="myforum"; // Database name 
-$tbl_name="fquestions"; // Table name 
+<?php 
+session_start();
 
-// Connect to server and select databse.
-$conn = mysqli_connect("$host", "$username", "$password")or die("cannot connect"); 
-mysqli_select_db($conn, $db_name)or die("cannot select DB");
+include_once "db_config.php"; 
 
-$sql="SELECT * FROM $tbl_name ORDER BY id DESC";
+if(isset($_GET['category'])) {
+	$category=$_GET['category'];
+	$_SESSION['category'] = $category;
+}
+
+if($_SESSION['category'] != "all" )
+{
+	$sql="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' ORDER BY id DESC";
+}
+else {
+	$sql="SELECT * FROM $tbl_name ORDER BY id DESC";
+}
 // OREDER BY id DESC is order result by descending
 $result=mysqli_query($conn, $sql);
 
-//count topic num
-$rows_num = mysqli_num_rows($result);
-$num = 1;
-
-//Search
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$s_type = test_input($_POST["s_type"]);
 	$search = test_input($_POST["search"]);
 
-	$sql2="SELECT * FROM $tbl_name WHERE $s_type like '%".$search."%' ";
+	if($_SESSION['category'] != "all") {
+		$sql2="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' AND $s_type like '%".$search."%' ";
+	}
+	else {
+		$sql2="SELECT * FROM $tbl_name WHERE $s_type like '%".$search."%' ";
+	}
 	$result=mysqli_query($conn, $sql2);
 }
+//count topic num
+$rows_num = mysqli_num_rows($result);
+$num = 1;
 
 function test_input($data) {
 	$data = trim($data);
@@ -62,6 +71,9 @@ function test_input($data) {
 <!-- ========================================================== -->
 <!-- BODY  ==================================================== -->
 <body>
+
+	<?php include_once "top_nav.php"; ?> 
+
 	<div class="container white p-1">
 		<table class="main_table table table-sm table-hover text-center mb-0">
 			<thead>
@@ -73,28 +85,27 @@ function test_input($data) {
 					<td width="15%"><strong>작성일</strong></td>
 				</tr>
 			</thead>
-
 			<tbody>
 				<?php
-// Start looping table row
+				// Start looping table row
 				while($rows = mysqli_fetch_array($result)){
 					?>
-					<tr style="display: none" onClick = "location.href='view_topic.php?id=<?php echo $rows['id'];?>'">
+					<tr style="display: none" onClick = "location.href='view_topic.php?id=<?php echo $rows['id'];?>&num=<?php echo $num;?>'">
 						<td><?php echo $num++; ?></td>
 						<td><?php echo $rows['topic']; ?></td>
 						<td><?php echo $rows['name']; ?></td>
 						<td><?php echo $rows['view']; ?></td>
 						<td><?php echo $rows['datetime']; ?></td>
 					</tr>
-
 					<?php
-// Exit looping and close connection 
+				// Exit looping and close connection 
 				}
 				mysqli_close($conn);
 				?>
 			</tbody>
 			<tfoot>
 				<form id="form1" name="form1" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+					<input class="d-none" name="category" type="text" id="category" value= "<?php echo $category; ?>"/>
 					<tr>
 						<td>
 							<select name="s_type" class="form-control form-control-sm">
@@ -132,32 +143,78 @@ function test_input($data) {
 	<script src="js/jquery.twbsPagination.min.js"></script>
 	<script type="text/javascript">
 
+		//navbar active
+		if("<?php echo $_SESSION['category'];?>" != "all") {
+			$('.navbar-nav' ).find( 'li.active' ).removeClass('active');
+			$('#<?php echo $_SESSION['category']?>' ).parent('li').addClass('active');
+		}
 		//pages total number
-		var tp = <?php echo ceil(($num-1)/5) ?>;
+		var tp = <?php echo ceil(($num-1)/5); ?>;
 		//number of pages that page shows
 		var vp = 5;
 		//number of table rows that page shows
 		var vt = 5;
-		//Pagination
-		$('#pagination').twbsPagination({
-			totalPages: tp,
-			visiblePages: vp,
-			next: 'Next',
-			prev: 'Prev',
-			onPageClick: function (event, page) {
-        //fetch content and render here
-        //first, show all topic
-        $(".main_table tbody tr").each(function(i) {
-        	$(this).show();
-        });
+		//Pagination (at least one topic is needed)
+		if(tp>0) {
+			$('#pagination').twbsPagination({
+				totalPages: tp,
+				visiblePages: vp,
+				next: 'Next',
+				prev: 'Prev',
+				onPageClick: function (event, page) {
+        	//fetch content and render here
+        	//first, show all topic
+        	$(".main_table tbody tr").each(function(i) {
+        		$(this).show();
+        	});
 
-        //second, hide outrange topic
-        $(".main_table tbody tr").each(function(i) {
-        	if(parseInt($(this).children().eq(0).text()) >page*vt || parseInt($(this).children().eq(0).text()) <=(page-1)*vt)
-        		$(this).hide();
-        });
-      }
-    });
+        	//second, hide outrange topic
+        	$(".main_table tbody tr").each(function(i) {
+        		if(parseInt($(this).children().eq(0).text()) >page*vt || parseInt($(this).children().eq(0).text()) <=(page-1)*vt)
+        			$(this).hide();
+        	});
+        }
+      });
+		}
+		else {
+			var ins = 
+			"<tr><td colspan=5>데이터가 존재하지 않습니다.</td></tr>";
+			$('.table tbody').html(ins);
+		}
+
+
+		//////////
+		$( '.navbar-nav a' ).on('click', function () {
+			var category = $(this).attr('id');
+			location.href = 'main_forum.php?category='+category;
+		});
+		//////////
+    //Nav Click event
+    // $("#all_nav").click( function () {
+    // 	$("#all_nav").parent('li').addClass('active');
+    // 	location.href = "main_forum.php?category=all";
+    // });
+
+    // $("#news_nav").click( function () {
+    	
+    // 	location.href = "main_forum.php?category=news";
+    // });
+
+    // $("#music_nav").click( function () {
+    // 	$("#music_nav").parent('li').addClass('active');
+    // 	location.href = "main_forum.php?category=music";	
+    // });
+
+    // $("#movie_nav").click( function () {
+    // 	$("#movie_nav").parent('li').addClass('active');
+    // 	location.href = "main_forum.php?category=movie";
+    // });
+
+    // $("#book_nav").click( function () {
+    // 	$("#book_nav").parent('li').addClass('active');
+    // 	location.href = "main_forum.php?category=book";
+    // });
+
   </script>
   <!-- ========================================================== -->
 </body>

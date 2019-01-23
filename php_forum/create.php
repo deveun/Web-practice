@@ -1,15 +1,6 @@
 <?php
 
-$host="localhost"; // Host name 
-$username="root"; // Mysql username 
-$password="1234"; // Mysql password 
-$db_name="myforum"; // Database name 
-$tbl_name="fquestions"; // Table name 
-$upload_tbl_name="upload_file";
-
-// Connect to server and select databse.
-$conn = mysqli_connect("$host", "$username", "$password")or die("cannot connect"); 
-mysqli_select_db($conn, $db_name)or die("cannot select DB");
+include_once "db_config.php"; 
 
 /////////////////////////////
 //Set file upload directory
@@ -27,11 +18,12 @@ $uploadOk = 0;
 
 // get data that sent from form 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	$category = $_POST["category"];
 	$topic = test_input($_POST["topic"]);
 	$detail = $_POST["detail"];
 	$name = test_input($_POST["name"]);
 	$email = test_input($_POST["email"]);
-	$datetime=date("y/m/d h:i A"); //create date time
+	$datetime=date("y/m/d H:i:s"); //create date time
 
 	// (When file exist) 
 	//Check if image file is a actual image or fake image
@@ -103,9 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$result=mysqli_query($conn, $sql);
 	}
 	
-	$sql1="INSERT INTO $tbl_name(topic, detail, name, email, datetime, view,file_id)VALUES('$topic', '$detail', '$name', '$email', '$datetime', 0, '$file_id')";
-
-	
+	$sql1="INSERT INTO $tbl_name (category, topic, detail, name, email, datetime, view,file_id)VALUES('$category', '$topic', '$detail', '$name', '$email', '$datetime', 0, '$file_id')";	
 	$result1=mysqli_query($conn, $sql1);
 	echo "
 	<script> 

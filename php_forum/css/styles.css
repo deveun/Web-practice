@@ -1,6 +1,6 @@
 body {
 	background-color: #ECC9C7;
-
+	word-break: keep-all;
 	display: table-cell;
 	vertical-align: middle;
 	justify-content: center;

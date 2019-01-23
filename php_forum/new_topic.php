@@ -42,6 +42,16 @@
 				</thead>
 				<tbody>
 					<tr>
+						<td class="text-right"><b>카테고리</b></td>
+						<td>:</td>
+						<td><select class="browser-default custom-select" name="category" id="category">
+							<option value="news" selected>news</option>
+							<option value="music">music</option>
+							<option value="movie">movie</option>
+							<option value="book">book</option>
+						</select></td>
+					</tr>
+					<tr>
 						<td class="text-right"><b>제목</b></td>
 						<td>:</td>
 						<td><input class="form-control form-control-sm" name="topic" type="text" id="topic" autocomplete="off" required/></td>

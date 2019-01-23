@@ -1,24 +1,39 @@
 <?php
 
-$host="localhost"; // Host name 
-$username="root"; // Mysql username 
-$password="1234"; // Mysql password 
-$db_name="myforum"; // Database name 
-$tbl_name="fquestions"; // Table name 
-$upload_tbl_name="upload_file";
+session_start();
+include_once "db_config.php"; 
 
-// Connect to server and select databse.
-$conn = mysqli_connect("$host", "$username", "$password")or die("cannot connect"); 
-mysqli_select_db($conn, $db_name)or die("cannot select DB");
-
-
-// get value of id that sent from address bar 
+// get id, num that sent from address bar 
 $id=$_GET['id'];
+$num=$_GET['num'];
 //$sql="SELECT * FROM $tbl_name WHERE id='$id'";
 $sql= "SELECT $tbl_name.*, $upload_tbl_name.* FROM $tbl_name INNER JOIN $upload_tbl_name ON $tbl_name.file_id=$upload_tbl_name.file_id WHERE id='$id'" ;
 $result=mysqli_query($conn, $sql);
 $rows=mysqli_fetch_array($result);
 $view=$rows['view'];
+$category = $rows['category'];
+
+// Count total data
+if($_SESSION['category'] != "all") {
+	$sql3 = "SELECT count(*) AS total FROM $tbl_name WHERE category = '$category'";
+	// Check data for prev / next button
+	$sql4="SELECT * FROM $tbl_name WHERE category='$category' AND id > '$id'";
+	$sql5="SELECT * FROM $tbl_name WHERE category='$category' AND id < '$id' ORDER BY id DESC";
+}
+else {
+	$sql3 = "SELECT count(*) AS total FROM $tbl_name";
+	// Check data for prev / next button
+	$sql4="SELECT * FROM $tbl_name WHERE id > '$id'";
+	$sql5="SELECT * FROM $tbl_name WHERE id < '$id' ORDER BY id DESC";
+}
+$result3 = mysqli_query($conn, $sql3);
+$rows1= mysqli_fetch_array($result3);
+$row_num = $rows1['total'];
+
+$result4=mysqli_query($conn, $sql4);
+$result5=mysqli_query($conn, $sql5);
+$rows_gt=mysqli_fetch_array($result4);
+$rows_lt=mysqli_fetch_array($result5);
 
 // // (조회수 0일때)if have no counter value set counter = 1
 // if(empty($view)){
@@ -31,18 +46,6 @@ $view=$rows['view'];
 $addview=$view+1;
 $sql2="UPDATE $tbl_name SET view='$addview' WHERE id='$id'";
 $result2=mysqli_query($conn, $sql2);
-
-// Check data for prev / next button
-$sql4="SELECT * FROM $tbl_name WHERE id > '$id'";
-$sql5="SELECT * FROM $tbl_name WHERE id < '$id' ORDER BY id DESC";
-$result4=mysqli_query($conn, $sql4);
-$result5=mysqli_query($conn, $sql5);
-$rows_gt=mysqli_fetch_array($result4);
-$rows_lt=mysqli_fetch_array($result5);
-// echo $rows_gt['id'];
-// echo $rows_lt['id'];
-// echo isset($rows_gt['id']);
-// echo isset($rows_lt['id']);
 
 mysqli_close($conn);
 ?>
@@ -72,7 +75,10 @@ mysqli_close($conn);
 <!-- ========================================================== -->
 <!-- BODY  ==================================================== -->
 <body>
-
+	<!-- index -->
+	<div class="container p-0 white-text text-right">
+		<?php echo $num?>/<?php echo $row_num?>
+	</div>
 	<div class="container white p-1">
 		<!-- View Table -->
 		<table class="view_table table table-sm table-borderless mb-0">
@@ -107,22 +113,34 @@ mysqli_close($conn);
 		</table>
 		<!-- /View Table -->
 		<!-- Update Table -->
-		<table class="update_table table table-sm table-borderless mb-0" style="display: none">
+		<table class="update_table table table-sm table-borderless mb-0" style="display: none;">
 			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
 			<!-- !!! Must use htemlspecialchars !!! -->
 			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="edit.php">
 				<thead>
 					<tr>
+						<td><b>카테고리</b></td>
+						<td>:</td>
+						<td><select class="custom-select" name="category" id="category">
+							<option id="news" value="news">news</option>
+							<option id="music" value="music">music</option>
+							<option id="movie" value="movie">movie</option>
+							<option id="book" value="book">book</option>
+						</select></td>
+						<td class="text-right"><?php echo $rows['datetime']; ?></td>
+					</tr>
+					<tr>
 						<td >제목 </td>
 						<td>:</td>
 						<td><input class="form-control" name="topic" type="text" id="topic" value= "<?php echo $rows['topic']; ?>" autocomplete="off"/>
 						</td>
-						<td class="text-right"><?php echo $rows['datetime']; ?></td>
+						
 					</tr>
 					<tr>
 						<td >작성자 </td>
 						<td>:</td>
 						<td><input class="form-control" name="name" type="text" id="name" value= "<?php echo $rows['name']; ?>" autocomplete="off"/></td>
+						<td></td>
 					</tr>
 					<tr>
 						<td>첨부파일</td>
@@ -168,54 +186,60 @@ mysqli_close($conn);
 
 	<script>
 
-			// Replace the <textarea id="editor1"> with a CKEditor
-    	// instance, using default configuration.
-    	CKEDITOR.replace('ckeditor');
+	//edit category default selected
+	$('#<?php echo $rows['category'];?>').attr("selected","selected");
+	// Replace the <textarea id="editor1"> with a CKEditor
+  // instance, using default configuration.
+  CKEDITOR.replace('ckeditor');
 
-    	$("#delete_btn").click( function () {
-    		if(confirm("정말로 삭제하시겠습니까?"))
-    			location.href='delete.php?id=<?php echo $rows['id']; ?>';
-    	});
+  $("#delete_btn").click( function () {
+  	if(confirm("정말로 삭제하시겠습니까?"))
+  		location.href='delete.php?id=<?php echo $rows['id']; ?>';
+  });
 
-    	//update button click -> change view
-    	$("#update_btn").click( function () {
-    		$(".view_table").hide();
-    		$(".update_table").show();
-    	});
+  //update button click -> change view
+  $("#update_btn").click( function () {
+  	$(".view_table").hide();
+  	$(".update_table").show();
+  });
 
-			//cancel button click
-			$("#cancel_btn").click( function () {
-				location.href="view_topic.php?id=<?php echo $id; ?>";
-			});
+	//cancel button click
+	$("#cancel_btn").click( function () {
+		location.href="view_topic.php?id=<?php echo $id; ?>&num=<?php echo $num;?>";
+	});
 
-			// NOT SOLVED !!!!!!!!!!!!diabled button!!!!!!!!!!!!!!!!
-			// if(<?php echo isset($rows_gt['id'])?>)
-			//  	$("#next_btn").prop('disabled',false);
-			// if(<?php echo isset($rows_lt['id'])?>)
-			//  	$("#prev_btn").prop('disabled',false);
+	//button disability
+	if(<?php echo $num?> == 1)
+		$("#next_btn").prop('disabled',true);
+	if(<?php echo $num?> == <?php echo $row_num?>)
+		$("#prev_btn").prop('disabled',true);
 
-			//file link visibility
-			if('<?php echo $rows['file_id'];?>' == '0')
-			{
-				$('.file_info').hide();
-				$('#file').attr('style','visibility:visible');
-			}
+	//file link visibility
+	if('<?php echo $rows['file_id'];?>' == '0')
+	{
+		$('.file_info').hide();
+		$('#file').attr('style','visibility:visible');
+	}
 
-			//delete attached file
-			$("#del_file").click( function () {
-				$('.file_info').hide();
-				$('#file').attr('style','visibility:visible');
-				$('#delOk').val(1);
-			});
+	//delete attached file
+	$("#del_file").click( function () {
+		$('.file_info').hide();
+		$('#file').attr('style','visibility:visible');
+		$('#delOk').val(1);
+	});
 
-			$("#next_btn").click( function () {
-				location.href='view_topic.php?id=<?php echo $rows_gt['id']; ?>';
-			});
+	//<<<
+	$("#next_btn").click( function () {
+		location.href='view_topic.php?id=<?php echo $rows_gt['id'];?>&num=<?php echo $num-1;?>';
+		return;
+	});
 
-			$("#prev_btn").click( function () {
-				location.href='view_topic.php?id=<?php echo $rows_lt['id']; ?>';
-			});
-		</script>
-		<!-- ======================================================= -->
-	</body>
-	</html>
+	//>>>
+	$("#prev_btn").click( function () {
+		location.href='view_topic.php?id=<?php echo $rows_lt['id'];?>&num=<?php echo $num+1;?>';
+		return;
+	});
+</script>
+<!-- ======================================================= -->
+</body>
+</html>

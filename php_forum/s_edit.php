@@ -145,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	echo "
 	<script> 
 	alert('수정완료');
-	document.location.href='main_forum.php';
+	//document.location.href='view_main.php';
 	</script>"; 
 }
 	/////////////////Save file to server /uploads directory

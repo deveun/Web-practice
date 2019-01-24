@@ -36,5 +36,5 @@ unlink($file_dir);
 // }
 ?>
 <script type="text/javascript">
-	location.href="main_forum.php";
+	location.href="view_main.php";
 </script>

@@ -13,13 +13,16 @@ if(isset($_GET['category'])) {
 	$_SESSION['category'] = $category;
 }
 
-if($_SESSION['category'] != "all" )
-{
-	$sql="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' ORDER BY id DESC";
-}
-else {
+if($_SESSION['category'] == "all" ) {
 	$sql="SELECT * FROM $tbl_name ORDER BY id DESC";
 }
+else if($_SESSION['category'] == "my" ) {
+	$sql="SELECT * FROM $tbl_name WHERE user_id = '".$_SESSION['user_id']."'ORDER BY id DESC";
+}
+else {
+	$sql="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' ORDER BY id DESC";
+}
+
 // OREDER BY id DESC is order result by descending
 $result=mysqli_query($conn, $sql);
 
@@ -27,11 +30,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$s_type = test_input($_POST["s_type"]);
 	$search = test_input($_POST["search"]);
 
-	if($_SESSION['category'] != "all") {
-		$sql2="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' AND $s_type like '%".$search."%' ";
+	if($_SESSION['category'] == "my") {
+		$sql2="SELECT * FROM $tbl_name WHERE user_id = '".$_SESSION['user_id']."' AND $s_type like '%".$search."%' ";
+	}
+	else if($_SESSION['category'] == "all") {
+		$sql2="SELECT * FROM $tbl_name WHERE $s_type like '%".$search."%' ";
 	}
 	else {
-		$sql2="SELECT * FROM $tbl_name WHERE $s_type like '%".$search."%' ";
+		$sql2="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' AND $s_type like '%".$search."%' ";
+		
 	}
 	$result=mysqli_query($conn, $sql2);
 }
@@ -94,7 +101,7 @@ function test_input($data) {
 				// Start looping table row
 				while($rows = mysqli_fetch_array($result)){
 					?>
-					<tr style="display: none" onClick = "location.href='view_topic.php?id=<?php echo $rows['id'];?>&num=<?php echo $num;?>'">
+					<tr style="display: none" class="select_btn">
 						<td><?php echo $num++; ?></td>
 						<td><?php echo $rows['topic']; ?></td>
 						<td><?php echo $rows['user_id']; ?></td>
@@ -146,25 +153,48 @@ function test_input($data) {
 	<!-- /JavaScript CDN LIST ===================================== -->
 	<script src="js/jquery.twbsPagination.min.js"></script>
 	<script type="text/javascript">
-
-		//navbar active
+		//remove navbar (MY)
+		// if("<?php echo $_SESSION['category'];?>" == "my") {
+		// 	$('.navbar').hide();
+		//}
+		//nav item active
 		if("<?php echo $_SESSION['category'];?>" != "all") {
 			$('.navbar-nav' ).find( 'li.active' ).removeClass('active');
 			$('#<?php echo $_SESSION['category']?>' ).parent('li').addClass('active');
 		}	
-		//nav click
+		//nav click event
 		$( '.navbar-nav a' ).on('click', function () {
-			var category = $(this).attr('id');
-			location.href = 'main_forum.php?category='+category;
+			if("<?php echo $_SESSION['user_id'];?>" != "" || $(this).attr('id') =="all") {
+				var category = $(this).attr('id');
+				location.href = 'view_main.php?category='+category;
+			}
+			else {
+				alert("로그인 후 이용가능합니다.");
+				$('#modalLoginForm').modal('toggle');
+			}
+			
 		});
 
-		//check login state
+		//CREATE => check login state
 		$("#create_btn").click( function () {
 			if("<?php echo $_SESSION['user_id'];?>" != "")
-				location.href="new_topic.php";
-			else
+			location.href="view_new.php";
+			else {
 				alert("로그인 후 이용가능합니다.");
+				$('#modalLoginForm').modal('toggle');
+			}
 		});
+
+		//VIEW_TOPIC => check login state
+		$(".select_btn").click( function () {
+			if("<?php echo $_SESSION['user_id'];?>" != "") 
+			location.href='view_topic.php?id=<?php echo $rows['id'];?>&num=<?php echo $num;?>';
+			else {
+				alert("로그인 후 이용가능합니다.");
+				$('#modalLoginForm').modal('toggle');
+			}
+		});
+
 		
 		//pages total number
 		var tp = <?php echo ceil(($num-1)/5); ?>;

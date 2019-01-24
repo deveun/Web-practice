@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		if ($uploadOk == 0) {
 			echo "<script> 
 			alert('Sorry, your file was not uploaded.');
-			document.location.href='main_forum.php'; </script>";
+			document.location.href='view_main.php'; </script>";
 			return;
 		}
 		// if everything is ok, try to <<<UPLOAD>>> file (dir, destination)
@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
 				echo "The file ". basename( $_FILES["file"]["name"]). " has been uploaded.";
 			} else {
-				echo "<script> alert('Sorry, there was an error uploading your file.');	document.location.href='main_forum.php';</script>";
+				echo "<script> alert('Sorry, there was an error uploading your file.');	document.location.href='view_main.php';</script>";
 				return;
 			}
 		}
@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	echo "
 	<script> 
 	alert('작성완료');
-	document.location.href='main_forum.php';
+	document.location.href='view_main.php';
 	</script>"; 
 
 }

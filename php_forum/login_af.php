@@ -28,9 +28,13 @@ if (session_status() == PHP_SESSION_NONE) {
 			},
 			success : function(data) {
 				alert("로그아웃되었습니다.");
-				location.href="main_forum.php";
+				location.href="index.php";
 			}
 
 		});
+	});
+
+	$("#my_btn").click( function () {
+		location.href = 'view_main.php?category=my';
 	});
 </script>

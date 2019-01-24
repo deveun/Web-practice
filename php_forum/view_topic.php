@@ -11,20 +11,29 @@ $sql= "SELECT $tbl_name.*, $upload_tbl_name.* FROM $tbl_name INNER JOIN $upload_
 $result=mysqli_query($conn, $sql);
 $rows=mysqli_fetch_array($result);
 $view=$rows['view'];
+$user_id = $rows['user_id'];
 $category = $rows['category'];
 
 // Count total data
-if($_SESSION['category'] != "all") {
-	$sql3 = "SELECT count(*) AS total FROM $tbl_name WHERE category = '$category'";
+if($_SESSION['category'] == "my") {
+	$sql3 = "SELECT count(*) AS total FROM $tbl_name WHERE user_id = '$user_id'";
 	// Check data for prev / next button
-	$sql4="SELECT * FROM $tbl_name WHERE category='$category' AND id > '$id'";
-	$sql5="SELECT * FROM $tbl_name WHERE category='$category' AND id < '$id' ORDER BY id DESC";
+	$sql4="SELECT * FROM $tbl_name WHERE user_id='$user_id' AND id > '$id'";
+	$sql5="SELECT * FROM $tbl_name WHERE user_id='$user_id' AND id < '$id' ORDER BY id DESC";
+	
 }
-else {
+else if($_SESSION['category'] == "all") {
 	$sql3 = "SELECT count(*) AS total FROM $tbl_name";
 	// Check data for prev / next button
 	$sql4="SELECT * FROM $tbl_name WHERE id > '$id'";
 	$sql5="SELECT * FROM $tbl_name WHERE id < '$id' ORDER BY id DESC";
+	
+}
+else {
+	$sql3 = "SELECT count(*) AS total FROM $tbl_name WHERE category = '$category'";
+	// Check data for prev / next button
+	$sql4="SELECT * FROM $tbl_name WHERE category='$category' AND id > '$id'";
+	$sql5="SELECT * FROM $tbl_name WHERE category='$category' AND id < '$id' ORDER BY id DESC";
 }
 $result3 = mysqli_query($conn, $sql3);
 $rows1= mysqli_fetch_array($result3);
@@ -95,7 +104,7 @@ mysqli_close($conn);
 					<td colspan="2">작성자: <?php echo $rows['user_id']; ?></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="border-bottom border-dark">첨부파일:&nbsp;<a class="file_info" href="<?php echo $rows['file_dir']; ?>" download> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?></a></td>
+					<td colspan="2" class="border-bottom border-dark">첨부파일:&nbsp;<a class="file_info" href="<?php echo $rows['file_dir']; ?>" download hidden> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?></a></td>
 				</tr>
 			</thead>
 			<tbody>
@@ -110,7 +119,7 @@ mysqli_close($conn);
 					<td class="text-right">
 						<button class="btn btn-sm btn-default" id="update_btn" hidden>수정</button>
 						<button class="btn btn-sm btn-default" id="delete_btn" hidden>삭제</button>
-						<button class="btn btn-sm btn-default" onclick="location.href = 'main_forum.php'">글목록</button>
+						<button class="btn btn-sm btn-default" onclick="location.href = 'view_main.php'">글목록</button>
 					</td>
 				</tr>
 			</tbody>
@@ -120,7 +129,7 @@ mysqli_close($conn);
 		<table class="update_table table table-sm table-borderless mb-0" style="display: none;">
 			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
 			<!-- !!! Must use htemlspecialchars !!! -->
-			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="edit.php">
+			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="s_edit.php">
 				<thead>
 					<tr>
 						<td><b>카테고리</b></td>
@@ -143,13 +152,13 @@ mysqli_close($conn);
 					<tr>
 						<td >작성자 </td>
 						<td>:</td>
-						<td><input class="form-control" name="user_id" type="text" id="user_id" value= "<?php echo $rows['user_id']; ?>" disabled/></td>
+						<td><input class="form-control" name="user_id" type="text" id="user_id" value= "<?php echo $rows['user_id']; ?>" disabled/><input name="user_id" value="<?php echo $_SESSION['user_id'];?>" type="hidden"/></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>첨부파일</td>
 						<td>:</td>
-						<td><a class="file_info" id="del_file"> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?>&nbsp; ...<i class="far fa-trash-alt"></i></a><input name="file" id="file" type="file" style="visibility: hidden;" /></td>
+						<td><a class="file_info" id="del_file" hidden> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?>&nbsp; ...<i class="far fa-trash-alt"></i></a><input name="file" id="file" type="file" hidden/></td>
 						<td class="d-none">
 							<input class="form-control" name="delOk" type="number" id="delOk" value="0"/>
 						</td>
@@ -168,7 +177,7 @@ mysqli_close($conn);
 						<td colspan="4" class="text-right">
 							<button class="btn btn-sm btn-default" type="submit" name="Submit">확인</button>
 							<button class="btn btn-sm btn-default" type="button" id="cancel_btn">취소</button>
-							<button class="btn btn-sm btn-default" type="button" onclick="location.href = 'main_forum.php'">글목록</button>
+							<button class="btn btn-sm btn-default" type="button" onclick="location.href = 'view_main.php'">글목록</button>
 						</td>
 					</tr>
 				</tbody>
@@ -207,7 +216,7 @@ mysqli_close($conn);
 
   	$("#delete_btn").click( function () {
   		if(confirm("정말로 삭제하시겠습니까?"))
-  			location.href='delete.php?id=<?php echo $rows['id']; ?>';
+  			location.href='s_delete.php?id=<?php echo $rows['id']; ?>';
   	});
 
   	//update button click -> change view
@@ -228,16 +237,16 @@ mysqli_close($conn);
 			$("#prev_btn").prop('disabled',true);
 
 		//file link visibility
-		if('<?php echo $rows['file_id'];?>' == '0')
+		if('<?php echo $rows['file_id'];?>' != '0')
 		{
-			$('.file_info').hide();
-			$('#file').attr('style','visibility:visible');
+			$('.file_info').removeAttr("hidden");
+			//$('#file').removeAttr("hidden");
 		}
 
 		//delete attached file
 		$("#del_file").click( function () {
-			$('.file_info').hide();
-			$('#file').attr('style','visibility:visible');
+			$('.file_info').addClass("d-none");
+			$('#file').removeAttr("hidden");
 			$('#delOk').val(1);
 		});
 

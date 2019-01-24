@@ -41,7 +41,7 @@
 			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
 			<!-- !!! Must use htemlspecialchars !!! -->
 			<!-- enctype="multipart/form-data" ==> File Upload -->
-			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="create.php">
+			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="s_create.php">
 				<thead>
 					<tr><td class="text-center" colspan="3"><b>새 글 작성하기</b></td></tr>
 				</thead>
@@ -84,7 +84,7 @@
 					<tr>
 						<td colspan="3" class="text-right">
 							<button class="btn btn-default btn-sm" type="submit" name="Submit">확인</button> 
-							<button class="btn btn-default btn-sm" type="reset" onClick="location.href='main_forum.php'">취소</button>
+							<button class="btn btn-default btn-sm" type="reset" onClick="location.href='view_main.php'">취소</button>
 						</td>
 					</tr>
 				</tbody>

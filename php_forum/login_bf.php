@@ -23,7 +23,7 @@
 				<form id="login_form">
 					<div class="form-group">
 						<small class="form-text text-muted">아이디</small>
-						<input id="login_id" type="email" class="form-control" required>
+						<input id="login_id" type="email" class="form-control" autocomplete="off" required>
 						<!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
 					</div>
 					<div class="form-group">

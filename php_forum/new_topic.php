@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!-- *** REFERENCE *** ========================== -->
 <!-- File Upload -->
 <!-- http://palpit.tistory.com/331 -->
@@ -21,6 +22,8 @@
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 	<!-- CKeditor ============================================== -->
 	<script src="ckeditor/ckeditor.js"></script>
+	<!-- Jquery 3.2.1 ============================================= -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 
 </head>
@@ -29,6 +32,10 @@
 <!-- ========================================================== -->
 <!-- BODY  ==================================================== -->
 <body>
+	<?php 
+	if($_SESSION['user_name'] =='') {	include_once "login_bf.php";	}
+	else { include_once "login_af.php"; }
+	?> 
 	<div class="container white p-1">
 		<table class="table w-8 table-sm table-borderless mb-0">
 			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
@@ -36,9 +43,7 @@
 			<!-- enctype="multipart/form-data" ==> File Upload -->
 			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="create.php">
 				<thead>
-					<tr>
-						<td class="text-center" colspan="3"><b>새 글 작성하기</b></td>
-					</tr>
+					<tr><td class="text-center" colspan="3"><b>새 글 작성하기</b></td></tr>
 				</thead>
 				<tbody>
 					<tr>
@@ -59,7 +64,7 @@
 					<tr>
 						<td class="text-right"><b>작성자</b></td>
 						<td>:</td>
-						<td><input class="form-control form-control-sm" name="name" type="text" id="name" autocomplete="off" required/></td>
+						<td><input class="form-control form-control-sm" value="<?php echo $_SESSION['user_id'];?>" disabled/><input name="user_id" value="<?php echo $_SESSION['user_id'];?>" type="hidden"/></td>
 					</tr>
 					<tr>
 						<td class="text-right"><b>이메일</b></td>
@@ -90,8 +95,7 @@
 	<!-- ========================================================== -->
 	<!-- JavaScript CDN LIST ====================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<!-- Jquery 3.2.1 ============================================= -->
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
 	<!-- Popper.js 1.14.3 ========================================= -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umdpopper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 	<!-- Bootstrap 4.1.3 ========================================== -->

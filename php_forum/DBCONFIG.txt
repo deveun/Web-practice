@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- 생성 시간: 19-01-23 10:11
+-- 생성 시간: 19-01-24 11:41
 -- 서버 버전: 10.1.37-MariaDB
 -- PHP 버전: 7.3.0
 
@@ -33,7 +33,7 @@ CREATE TABLE `fquestions` (
   `category` varchar(20) NOT NULL,
   `topic` varchar(255) NOT NULL DEFAULT '',
   `detail` longtext NOT NULL,
-  `name` varchar(65) NOT NULL DEFAULT '',
+  `user_id` varchar(80) NOT NULL,
   `email` varchar(65) NOT NULL DEFAULT '',
   `datetime` varchar(25) NOT NULL DEFAULT '',
   `view` int(4) NOT NULL DEFAULT '0',
@@ -44,13 +44,8 @@ CREATE TABLE `fquestions` (
 -- 테이블의 덤프 데이터 `fquestions`
 --
 
-INSERT INTO `fquestions` (`id`, `category`, `topic`, `detail`, `name`, `email`, `datetime`, `view`, `file_id`) VALUES
-(4, 'music', 'music', '<p>ë®¤ì§</p>\r\n', 'ë®¤ì§', 'ë®¤ì§', '19/01/23 09:16:12', 31, 'c9bedd3e3d772d902728e6ff054e9b77'),
-(5, 'news', 'ë‰´ìŠ¤', '<p>ë‰´ë‰´ë‰´ë‰¸</p>\r\n', 'ë‰´ìŠ¤', 'ë‰´ìŠ¤', '19/01/23 09:16:48', 32, '0'),
-(6, 'news', 'ss', '<p>ë‰´ë‰´ë‰´ë‰¸</p>\r\n', 'ë‰´ë‰´', 'ë‰¸ë‰´ã… ã„´', '19/01/23 09:39:17', 36, '0'),
-(7, 'book', 'ì±…ì±…ì±…', '<p>ì±… boobobbob</p>\r\n', 'ì±…ì±…', 'ì±…', '19/01/23 10:04:10', 4, '0'),
-(8, 'movie', 'movie', '<p>sdasga</p>\r\n', 'momom', 'mo', '19/01/23 10:04:27', 16, '0'),
-(9, 'book', 'bbb', '<p>bbbbb</p>\r\n', 'bb', 'bb', '19/01/23 10:10:11', 2, '3695348790ca019072782d9c7d92455b');
+INSERT INTO `fquestions` (`id`, `category`, `topic`, `detail`, `user_id`, `email`, `datetime`, `view`, `file_id`) VALUES
+(14, 'news', 'a', '<p>a</p>\r\n', 'id1', 'a', '19/01/24 11:39:08', 5, '0');
 
 -- --------------------------------------------------------
 
@@ -68,9 +63,29 @@ CREATE TABLE `upload_file` (
 --
 
 INSERT INTO `upload_file` (`file_id`, `file_dir`) VALUES
-('0', 'no_file'),
-('3695348790ca019072782d9c7d92455b', 'uploads/sample1_l.jpg'),
-('c9bedd3e3d772d902728e6ff054e9b77', 'uploads/sam.jpg');
+('0', 'no_file');
+
+-- --------------------------------------------------------
+
+--
+-- 테이블 구조 `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(80) NOT NULL,
+  `user_pw` char(41) NOT NULL,
+  `user_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- 테이블의 덤프 데이터 `users`
+--
+
+INSERT INTO `users` (`id`, `user_id`, `user_pw`, `user_name`) VALUES
+(41, 'id1', '*01785BBB277956A280FEBA326E468494D2A64CF1', 'user1'),
+(42, 'id2', '*6BA08BDD669B27CB263F9730FF8CAC21247D9EC2', 'user2'),
+(43, 'id3', '*D20160432F5D84F2AC8B20DE62FCF6142EBB3FE6', 'user3');
 
 --
 -- 덤프된 테이블의 인덱스
@@ -81,13 +96,21 @@ INSERT INTO `upload_file` (`file_id`, `file_dir`) VALUES
 --
 ALTER TABLE `fquestions`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `file_id` (`file_id`);
+  ADD KEY `file_id` (`file_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- 테이블의 인덱스 `upload_file`
 --
 ALTER TABLE `upload_file`
   ADD PRIMARY KEY (`file_id`);
+
+--
+-- 테이블의 인덱스 `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`) USING BTREE;
 
 --
 -- 덤프된 테이블의 AUTO_INCREMENT
@@ -97,7 +120,13 @@ ALTER TABLE `upload_file`
 -- 테이블의 AUTO_INCREMENT `fquestions`
 --
 ALTER TABLE `fquestions`
-  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- 테이블의 AUTO_INCREMENT `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- 덤프된 테이블의 제약사항
@@ -107,7 +136,8 @@ ALTER TABLE `fquestions`
 -- 테이블의 제약사항 `fquestions`
 --
 ALTER TABLE `fquestions`
-  ADD CONSTRAINT `fquestions_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `upload_file` (`file_id`);
+  ADD CONSTRAINT `fquestions_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `upload_file` (`file_id`),
+  ADD CONSTRAINT `fquestions_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

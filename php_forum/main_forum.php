@@ -1,10 +1,9 @@
-<!-- ***REFERENCE *** --> 
-<!-- http://pixelcode.co.uk/tutorials/php/simple-php-forum/ -->
-<!-- Global Variables (SESSION): http://www.tizag.com/phpT/phpsessions.php -->
-<!-- Recent version than PHP7 : mysql... -> mysqli... -->
-
-
 <?php 
+// ***REFERENCE *** 
+// http://pixelcode.co.uk/tutorials/php/simple-php-forum/
+// Global Variables (SESSION): http://www.tizag.com/phpT/phpsessions.php
+// Recent version than PHP7 : mysql... -> mysqli...
+
 session_start();
 
 include_once "db_config.php"; 
@@ -64,6 +63,8 @@ function test_input($data) {
 
 	<!-- Icon Pack Download (https://fontawesome.com/)========== -->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+	<!-- Jquery 3.2.1 ============================================= -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 </head>
 <!-- /HEAD ==================================================== -->
@@ -71,8 +72,11 @@ function test_input($data) {
 <!-- ========================================================== -->
 <!-- BODY  ==================================================== -->
 <body>
-
-	<?php include_once "top_nav.php"; ?> 
+	<?php 
+	if($_SESSION['user_name'] =='') {	include_once "login_bf.php";	}
+	else { include_once "login_af.php"; }
+	include_once "top_nav.php"; 
+	?> 
 
 	<div class="container white p-1">
 		<table class="main_table table table-sm table-hover text-center mb-0">
@@ -93,7 +97,7 @@ function test_input($data) {
 					<tr style="display: none" onClick = "location.href='view_topic.php?id=<?php echo $rows['id'];?>&num=<?php echo $num;?>'">
 						<td><?php echo $num++; ?></td>
 						<td><?php echo $rows['topic']; ?></td>
-						<td><?php echo $rows['name']; ?></td>
+						<td><?php echo $rows['user_id']; ?></td>
 						<td><?php echo $rows['view']; ?></td>
 						<td><?php echo $rows['datetime']; ?></td>
 					</tr>
@@ -104,13 +108,14 @@ function test_input($data) {
 				?>
 			</tbody>
 			<tfoot>
+				<!-- Search -->
 				<form id="form1" name="form1" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 					<input class="d-none" name="category" type="text" id="category" value= "<?php echo $category; ?>"/>
 					<tr>
 						<td>
 							<select name="s_type" class="form-control form-control-sm">
 								<option value="topic">제목</option>
-								<option value="name">작성자</option>
+								<option value="user_id">작성자</option>
 							</select>
 						</td>
 						<td width="25%">
@@ -120,7 +125,7 @@ function test_input($data) {
 							<button class="btn btn-sm btn-default" type="submit">검색</button>
 						</td>
 						<td class="text-right" colspan="2">
-							<a role="button" class="btn btn-sm btn-default" href="new_topic.php"><strong>글작성</strong></a>
+							<a role="button" class="btn btn-sm btn-default" id="create_btn"><strong>글작성</strong></a>
 						</td>
 					</tr>
 				</form>
@@ -133,8 +138,7 @@ function test_input($data) {
 	<!-- ========================================================== -->
 	<!-- JavaScript CDN LIST ====================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<!-- Jquery 3.2.1 ============================================= -->
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
 	<!-- Popper.js 1.14.3 ========================================= -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 	<!-- Bootstrap 4.1.3 ========================================== -->
@@ -147,7 +151,21 @@ function test_input($data) {
 		if("<?php echo $_SESSION['category'];?>" != "all") {
 			$('.navbar-nav' ).find( 'li.active' ).removeClass('active');
 			$('#<?php echo $_SESSION['category']?>' ).parent('li').addClass('active');
-		}
+		}	
+		//nav click
+		$( '.navbar-nav a' ).on('click', function () {
+			var category = $(this).attr('id');
+			location.href = 'main_forum.php?category='+category;
+		});
+
+		//check login state
+		$("#create_btn").click( function () {
+			if("<?php echo $_SESSION['user_id'];?>" != "")
+				location.href="new_topic.php";
+			else
+				alert("로그인 후 이용가능합니다.");
+		});
+		
 		//pages total number
 		var tp = <?php echo ceil(($num-1)/5); ?>;
 		//number of pages that page shows
@@ -182,40 +200,7 @@ function test_input($data) {
 			$('.table tbody').html(ins);
 		}
 
-
-		//////////
-		$( '.navbar-nav a' ).on('click', function () {
-			var category = $(this).attr('id');
-			location.href = 'main_forum.php?category='+category;
-		});
-		//////////
-    //Nav Click event
-    // $("#all_nav").click( function () {
-    // 	$("#all_nav").parent('li').addClass('active');
-    // 	location.href = "main_forum.php?category=all";
-    // });
-
-    // $("#news_nav").click( function () {
-    	
-    // 	location.href = "main_forum.php?category=news";
-    // });
-
-    // $("#music_nav").click( function () {
-    // 	$("#music_nav").parent('li').addClass('active');
-    // 	location.href = "main_forum.php?category=music";	
-    // });
-
-    // $("#movie_nav").click( function () {
-    // 	$("#movie_nav").parent('li').addClass('active');
-    // 	location.href = "main_forum.php?category=movie";
-    // });
-
-    // $("#book_nav").click( function () {
-    // 	$("#book_nav").parent('li').addClass('active');
-    // 	location.href = "main_forum.php?category=book";
-    // });
-
-  </script>
-  <!-- ========================================================== -->
+	</script>
+	<!-- ========================================================== -->
 </body>
 </html>

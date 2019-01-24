@@ -20,7 +20,7 @@ $uploadOk = 0;
 // get data that sent from form 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$topic = test_input($_POST["topic"]);
-	$name = test_input($_POST["name"]);
+	$user_id = test_input($_POST["user_id"]);
 	$detail = $_POST["detail"];
 	$id = test_input($_POST["id"]);
 	$delOk = test_input($_POST["delOk"]);
@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			$result=mysqli_query($conn, $sql);
 
 			//update forum table
-			$sql2="UPDATE $tbl_name SET topic='$topic', name='$name', detail='$detail', file_id='$file_id' WHERE id='$id'";
+			$sql2="UPDATE $tbl_name SET topic='$topic', user_id='$user_id', detail='$detail', file_id='$file_id' WHERE id='$id'";
 			$result2=mysqli_query($conn, $sql2);
 		}
 		//CASE2: file o, del o => change file
@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			$result5=mysqli_query($conn, $sql5);
 
 			//update forum table
-			$sql2="UPDATE $tbl_name SET topic='$topic', name='$name', detail='$detail' WHERE id='$id'";
+			$sql2="UPDATE $tbl_name SET topic='$topic', user_id='$user_id', detail='$detail' WHERE id='$id'";
 			$result2=mysqli_query($conn, $sql2);
 		}
 	}
@@ -127,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			unlink($file_dir);
 
 			//update forum table
-			$sql2="UPDATE $tbl_name SET topic='$topic', name='$name', detail='$detail', file_id='0' WHERE id='$id'";
+			$sql2="UPDATE $tbl_name SET topic='$topic', user_id='$user_id', detail='$detail', file_id='0' WHERE id='$id'";
 			$result2=mysqli_query($conn, $sql2);
 
 			//delete upload_file data
@@ -137,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 		//CASE4: just update forum table
 		else {
-			$sql2="UPDATE $tbl_name SET topic='$topic', name='$name', detail='$detail' WHERE id='$id'";
+			$sql2="UPDATE $tbl_name SET topic='$topic', user_id='$user_id', detail='$detail' WHERE id='$id'";
 			$result2=mysqli_query($conn, $sql2);
 		}
 	}

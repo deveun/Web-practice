@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$category = $_POST["category"];
 	$topic = test_input($_POST["topic"]);
 	$detail = $_POST["detail"];
-	$name = test_input($_POST["name"]);
+	$user_id = test_input($_POST["user_id"]);
 	$email = test_input($_POST["email"]);
 	$datetime=date("y/m/d H:i:s"); //create date time
 
@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$result=mysqli_query($conn, $sql);
 	}
 	
-	$sql1="INSERT INTO $tbl_name (category, topic, detail, name, email, datetime, view,file_id)VALUES('$category', '$topic', '$detail', '$name', '$email', '$datetime', 0, '$file_id')";	
+	$sql1="INSERT INTO $tbl_name (category, topic, detail, user_id, email, datetime, view,file_id)VALUES('$category', '$topic', '$detail', '$user_id', '$email', '$datetime', 0, '$file_id')";	
 	$result1=mysqli_query($conn, $sql1);
 	echo "
 	<script> 

@@ -1,4 +1,4 @@
-<div class="container my-3 px-0">
+<div class="container mb-3 px-0">
 	<nav class="navbar navbar-expand-sm navbar-dark default-color">
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>

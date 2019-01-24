@@ -8,6 +8,9 @@ body {
 	width: 100vw;
 }
 
+.t20 { font-size: 20px; }
+.t17 { font-size: 17px; }
+
 .table td {	vertical-align: middle;}
 .table .d { vertical-align: top; }
 

@@ -68,6 +68,8 @@ mysqli_close($conn);
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 	<!-- CKeditor ============================================== -->
 	<script src="ckeditor/ckeditor.js"></script>
+	<!-- Jquery 3.2.1 ============================================= -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 </head>
 <!-- /HEAD ==================================================== -->
@@ -75,10 +77,12 @@ mysqli_close($conn);
 <!-- ========================================================== -->
 <!-- BODY  ==================================================== -->
 <body>
+
 	<!-- index -->
-	<div class="container p-0 white-text text-right">
-		<?php echo $num?>/<?php echo $row_num?>
-	</div>
+	<?php 
+	if($_SESSION['user_name'] =='') {	include_once "login_bf.php";	}
+	else { include_once "login_af.php"; } 
+	?> 
 	<div class="container white p-1">
 		<!-- View Table -->
 		<table class="view_table table table-sm table-borderless mb-0">
@@ -88,7 +92,7 @@ mysqli_close($conn);
 					<td class="text-right"><?php echo $rows['datetime']; ?></td>
 				</tr>
 				<tr>
-					<td colspan="2">작성자: <?php echo $rows['name']; ?></td>
+					<td colspan="2">작성자: <?php echo $rows['user_id']; ?></td>
 				</tr>
 				<tr>
 					<td colspan="2" class="border-bottom border-dark">첨부파일:&nbsp;<a class="file_info" href="<?php echo $rows['file_dir']; ?>" download> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?></a></td>
@@ -104,8 +108,8 @@ mysqli_close($conn);
 						<button class="btn btn-sm btn-default p-2" id="prev_btn">&gt</button>
 					</td>
 					<td class="text-right">
-						<button class="btn btn-sm btn-default" id="update_btn">수정</button>
-						<button class="btn btn-sm btn-default" id="delete_btn">삭제</button>
+						<button class="btn btn-sm btn-default" id="update_btn" hidden>수정</button>
+						<button class="btn btn-sm btn-default" id="delete_btn" hidden>삭제</button>
 						<button class="btn btn-sm btn-default" onclick="location.href = 'main_forum.php'">글목록</button>
 					</td>
 				</tr>
@@ -139,7 +143,7 @@ mysqli_close($conn);
 					<tr>
 						<td >작성자 </td>
 						<td>:</td>
-						<td><input class="form-control" name="name" type="text" id="name" value= "<?php echo $rows['name']; ?>" autocomplete="off"/></td>
+						<td><input class="form-control" name="user_id" type="text" id="user_id" value= "<?php echo $rows['user_id']; ?>" disabled/></td>
 						<td></td>
 					</tr>
 					<tr>
@@ -172,12 +176,14 @@ mysqli_close($conn);
 		</table>
 		<!-- Update Table -->
 	</div>
+	<div class="container p-0 white-text text-right">
+		<?php echo $num?>/<?php echo $row_num?>
+	</div>
 
 	<!-- ========================================================== -->
 	<!-- JavaScript CDN LIST ====================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<!-- Jquery 3.2.1 ============================================= -->
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	
 	<!-- Popper.js 1.14.3 ========================================= -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umdpopper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 	<!-- Bootstrap 4.1.3 ========================================== -->
@@ -186,60 +192,67 @@ mysqli_close($conn);
 
 	<script>
 
-	//edit category default selected
-	$('#<?php echo $rows['category'];?>').attr("selected","selected");
-	// Replace the <textarea id="editor1"> with a CKEditor
-  // instance, using default configuration.
-  CKEDITOR.replace('ckeditor');
+		//check login state
+		if("<?php echo $_SESSION['user_id'];?>" != "" && "<?php echo $_SESSION['user_id'];?>" == "<?php echo $rows['user_id'];?>" ) {
+			$("#delete_btn").removeAttr("hidden");
+			$("#update_btn").removeAttr("hidden");
+		}
 
-  $("#delete_btn").click( function () {
-  	if(confirm("정말로 삭제하시겠습니까?"))
-  		location.href='delete.php?id=<?php echo $rows['id']; ?>';
-  });
 
-  //update button click -> change view
-  $("#update_btn").click( function () {
-  	$(".view_table").hide();
-  	$(".update_table").show();
-  });
+		//edit category default selected
+		$('#<?php echo $rows['category'];?>').attr("selected","selected");
+		// Replace the <textarea id="editor1"> with a CKEditor
+  	// instance, using default configuration.
+  	CKEDITOR.replace('ckeditor');
 
-	//cancel button click
-	$("#cancel_btn").click( function () {
-		location.href="view_topic.php?id=<?php echo $id; ?>&num=<?php echo $num;?>";
-	});
+  	$("#delete_btn").click( function () {
+  		if(confirm("정말로 삭제하시겠습니까?"))
+  			location.href='delete.php?id=<?php echo $rows['id']; ?>';
+  	});
 
-	//button disability
-	if(<?php echo $num?> == 1)
-		$("#next_btn").prop('disabled',true);
-	if(<?php echo $num?> == <?php echo $row_num?>)
-		$("#prev_btn").prop('disabled',true);
+  	//update button click -> change view
+  	$("#update_btn").click( function () {
+  		$(".view_table").hide();
+  		$(".update_table").show();
+  	});
 
-	//file link visibility
-	if('<?php echo $rows['file_id'];?>' == '0')
-	{
-		$('.file_info').hide();
-		$('#file').attr('style','visibility:visible');
-	}
+		//cancel button click
+		$("#cancel_btn").click( function () {
+			location.href="view_topic.php?id=<?php echo $id; ?>&num=<?php echo $num;?>";
+		});
 
-	//delete attached file
-	$("#del_file").click( function () {
-		$('.file_info').hide();
-		$('#file').attr('style','visibility:visible');
-		$('#delOk').val(1);
-	});
+		//button disability
+		if(<?php echo $num?> == 1)
+			$("#next_btn").prop('disabled',true);
+		if(<?php echo $num?> == <?php echo $row_num?>)
+			$("#prev_btn").prop('disabled',true);
 
-	//<<<
-	$("#next_btn").click( function () {
-		location.href='view_topic.php?id=<?php echo $rows_gt['id'];?>&num=<?php echo $num-1;?>';
-		return;
-	});
+		//file link visibility
+		if('<?php echo $rows['file_id'];?>' == '0')
+		{
+			$('.file_info').hide();
+			$('#file').attr('style','visibility:visible');
+		}
 
-	//>>>
-	$("#prev_btn").click( function () {
-		location.href='view_topic.php?id=<?php echo $rows_lt['id'];?>&num=<?php echo $num+1;?>';
-		return;
-	});
-</script>
-<!-- ======================================================= -->
+		//delete attached file
+		$("#del_file").click( function () {
+			$('.file_info').hide();
+			$('#file').attr('style','visibility:visible');
+			$('#delOk').val(1);
+		});
+
+		//<<<
+		$("#next_btn").click( function () {
+			location.href='view_topic.php?id=<?php echo $rows_gt['id'];?>&num=<?php echo $num-1;?>';
+			return;
+		});
+
+		//>>>
+		$("#prev_btn").click( function () {
+			location.href='view_topic.php?id=<?php echo $rows_lt['id'];?>&num=<?php echo $num+1;?>';
+			return;
+		});
+	</script>
+	<!-- ======================================================= -->
 </body>
 </html>

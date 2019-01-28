@@ -7,20 +7,49 @@
 session_start();
 
 include_once "db_config.php"; 
+$user_id = $_SESSION['user_id'];
 
+//count total user post num (calculate grade)
+$sql = "SELECT * FROM $tbl_name WHERE user_id = '$user_id'";
+$result = mysqli_query($conn, $sql);
+$user_post_num = mysqli_num_rows($result);
+//echo $user_post_num;
+if(intval($user_post_num) <5)
+{
+	$sql="UPDATE $user_tbl_name SET user_grade= '1' WHERE user_id='$user_id'";
+	$_SESSION['user_grade'] = 1;
+}
+else if(intval($user_post_num) >=5)
+{
+	$sql="UPDATE $user_tbl_name SET user_grade= '2' WHERE user_id='$user_id'";
+	$_SESSION['user_grade'] = 2;
+}
+else if(intval($user_post_num) >=15)
+{
+	$sql="UPDATE $user_tbl_name SET user_grade= '3' WHERE user_id='$user_id'";
+	$_SESSION['user_grade'] = 3;
+}
+else if(intval($user_post_num) >=50)
+{
+	$sql="UPDATE $user_tbl_name SET user_grade= '4' WHERE user_id='$user_id'";
+	$_SESSION['user_grade'] = 4;
+}
+$result = mysqli_query($conn, $sql);
+
+//save category session
 if(isset($_GET['category'])) {
 	$category=$_GET['category'];
 	$_SESSION['category'] = $category;
 }
 
 if($_SESSION['category'] == "all" ) {
-	$sql="SELECT * FROM $tbl_name ORDER BY id DESC";
+	$sql="SELECT * FROM $tbl_name ORDER BY topic_id DESC";
 }
 else if($_SESSION['category'] == "my" ) {
-	$sql="SELECT * FROM $tbl_name WHERE user_id = '".$_SESSION['user_id']."'ORDER BY id DESC";
+	$sql="SELECT * FROM $tbl_name WHERE user_id = '".$user_id."'ORDER BY topic_id DESC";
 }
 else {
-	$sql="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' ORDER BY id DESC";
+	$sql="SELECT * FROM $tbl_name WHERE category = '".$_SESSION['category']."' ORDER BY topic_id DESC";
 }
 
 // OREDER BY id DESC is order result by descending
@@ -31,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$search = test_input($_POST["search"]);
 
 	if($_SESSION['category'] == "my") {
-		$sql2="SELECT * FROM $tbl_name WHERE user_id = '".$_SESSION['user_id']."' AND $s_type like '%".$search."%' ";
+		$sql2="SELECT * FROM $tbl_name WHERE user_id = '".$user_id."' AND $s_type like '%".$search."%' ";
 	}
 	else if($_SESSION['category'] == "all") {
 		$sql2="SELECT * FROM $tbl_name WHERE $s_type like '%".$search."%' ";
@@ -52,6 +81,7 @@ function test_input($data) {
 	$data = htmlspecialchars($data);
 	return $data;
 }
+
 ?>
 
 <html>
@@ -72,6 +102,8 @@ function test_input($data) {
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 	<!-- Jquery 3.2.1 ============================================= -->
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<!-- DAUM address API ========================================= -->
+	<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
 
 </head>
 <!-- /HEAD ==================================================== -->
@@ -96,63 +128,68 @@ function test_input($data) {
 					<td width="15%"><strong>작성일</strong></td>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="table_body">
 				<?php
 				// Start looping table row
 				while($rows = mysqli_fetch_array($result)){
 					?>
-					<tr style="display: none" class="select_btn">
-						<td><?php echo $num++; ?></td>
-						<td><?php echo $rows['topic']; ?></td>
-						<td><?php echo $rows['user_id']; ?></td>
-						<td><?php echo $rows['view']; ?></td>
-						<td><?php echo $rows['datetime']; ?></td>
-					</tr>
-					<?php
+					<tr style="display: none" onClick = "
+					if('<?php echo $user_id;?>' == '') {
+					$('#modalLoginForm').modal('toggle');return;} else {location.href='view_topic.php?topic_id=<?php echo $rows['topic_id'];?>&num=<?php echo $num;?>'}">
+					<td><?php echo $num++; ?></td>
+					<td><?php echo $rows['topic']; ?>
+					<!-- New badge -->
+					<?php if (substr($rows['datetime'],0,8) == date('y/m/d')) echo "<span class='badge badge-default'>new</span>";?></td>
+					<td><?php echo $rows['user_id']; ?></td>
+					<td><?php echo $rows['view']; ?></td>
+					<td><?php echo $rows['datetime']; ?></td>
+				</tr>
+
+				<?php
 				// Exit looping and close connection 
-				}
-				mysqli_close($conn);
-				?>
-			</tbody>
-			<tfoot>
-				<!-- Search -->
-				<form id="form1" name="form1" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-					<input class="d-none" name="category" type="text" id="category" value= "<?php echo $category; ?>"/>
-					<tr>
-						<td>
-							<select name="s_type" class="form-control form-control-sm">
-								<option value="topic">제목</option>
-								<option value="user_id">작성자</option>
-							</select>
-						</td>
-						<td width="25%">
-							<input class="form-control form-control-sm" name="search" type="text" id="search" autocomplete="off"/>
-						</td>
-						<td class="text-left">
-							<button class="btn btn-sm btn-default" type="submit">검색</button>
-						</td>
-						<td class="text-right" colspan="2">
-							<a role="button" class="btn btn-sm btn-default" id="create_btn"><strong>글작성</strong></a>
-						</td>
-					</tr>
-				</form>
-			</tfoot>
-		</table><br>
-		<!-- pagination -->
-		<div><ul id="pagination" class="pagination-sm justify-content-center"></ul></div>
-	</div>
+			}
+			mysqli_close($conn);
+			?>
+		</tbody>
+		<tfoot>
+			<!-- Search -->
+			<form id="form1" name="form1" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+				<input class="d-none" name="category" type="text" id="category" value= "<?php echo $category; ?>"/>
+				<tr>
+					<td>
+						<select name="s_type" class="form-control form-control-sm">
+							<option value="topic">제목</option>
+							<option value="user_id">작성자</option>
+						</select>
+					</td>
+					<td width="25%">
+						<input class="form-control form-control-sm" name="search" type="text" id="search" autocomplete="off"/>
+					</td>
+					<td class="text-left">
+						<button class="btn btn-sm btn-default" type="submit">검색</button>
+					</td>
+					<td class="text-right" colspan="2">
+						<a role="button" class="btn btn-sm btn-default" id="create_btn"><strong>글작성</strong></a>
+					</td>
+				</tr>
+			</form>
+		</tfoot>
+	</table><br>
+	<!-- pagination -->
+	<div><ul id="pagination" class="pagination-sm justify-content-center"></ul></div>
+</div>
 
-	<!-- ========================================================== -->
-	<!-- JavaScript CDN LIST ====================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
+<!-- ========================================================== -->
+<!-- JavaScript CDN LIST ====================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
 
-	<!-- Popper.js 1.14.3 ========================================= -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-	<!-- Bootstrap 4.1.3 ========================================== -->
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-	<!-- /JavaScript CDN LIST ===================================== -->
-	<script src="js/jquery.twbsPagination.min.js"></script>
-	<script type="text/javascript">
+<!-- Popper.js 1.14.3 ========================================= -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<!-- Bootstrap 4.1.3 ========================================== -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<!-- /JavaScript CDN LIST ===================================== -->
+<script src="js/jquery.twbsPagination.min.js"></script>
+<script type="text/javascript">
 		//remove navbar (MY)
 		// if("<?php echo $_SESSION['category'];?>" == "my") {
 		// 	$('.navbar').hide();
@@ -164,12 +201,12 @@ function test_input($data) {
 		}	
 		//nav click event
 		$( '.navbar-nav a' ).on('click', function () {
-			if("<?php echo $_SESSION['user_id'];?>" != "" || $(this).attr('id') =="all") {
+			if("<?php echo $user_id;?>" != "" || $(this).attr('id') =="all") {
 				var category = $(this).attr('id');
 				location.href = 'view_main.php?category='+category;
 			}
 			else {
-				alert("로그인 후 이용가능합니다.");
+				//alert("로그인 후 이용가능합니다.");
 				$('#modalLoginForm').modal('toggle');
 			}
 			
@@ -177,25 +214,27 @@ function test_input($data) {
 
 		//CREATE => check login state
 		$("#create_btn").click( function () {
-			if("<?php echo $_SESSION['user_id'];?>" != "")
+			if("<?php echo $user_id;?>" != "")
 			location.href="view_new.php";
 			else {
-				alert("로그인 후 이용가능합니다.");
-				$('#modalLoginForm').modal('toggle');
-			}
-		});
-
-		//VIEW_TOPIC => check login state
-		$(".select_btn").click( function () {
-			if("<?php echo $_SESSION['user_id'];?>" != "") 
-			location.href='view_topic.php?id=<?php echo $rows['id'];?>&num=<?php echo $num;?>';
-			else {
-				alert("로그인 후 이용가능합니다.");
+				//alert("로그인 후 이용가능합니다.");
 				$('#modalLoginForm').modal('toggle');
 			}
 		});
 
 		
+		//VIEW_TOPIC => check login state
+		// $(".select_btn").click( function () {
+		// 	if("<?php echo $_SESSION['user_id'];?>" != "") 
+		// 	location.href='view_topic.php?topic_id=<?php echo $rows['topic_id'];?>&num=<?php echo $num;?>';
+		// 	else {
+		// 		//alert("로그인 후 이용가능합니다.");
+		// 		$('#modalLoginForm').modal('toggle');
+		// 	}
+		// });
+
+
+
 		//pages total number
 		var tp = <?php echo ceil(($num-1)/5); ?>;
 		//number of pages that page shows

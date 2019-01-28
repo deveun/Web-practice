@@ -4,7 +4,7 @@ $host="localhost"; // Host name
 $username="root"; // Mysql username 
 $password="1234"; // Mysql password 
 $db_name="myforum"; // Database name 
-$tbl_name="fquestions"; // Table name 
+$tbl_name="forum"; // Table name 
 $upload_tbl_name="upload_file";
 $user_tbl_name="users";
 

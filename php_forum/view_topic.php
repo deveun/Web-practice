@@ -3,37 +3,49 @@
 session_start();
 include_once "db_config.php"; 
 
-// get id, num that sent from address bar 
-$id=$_GET['id'];
+// get id, num that sent from address bar
+if(!isset($_GET['topic_id'])) {
+	echo "
+	<script> 
+	alert('잘못된 접근입니다.');
+	document.location.href='view_main.php';
+	</script>"; 
+}
+$topic_id=$_GET['topic_id'];
 $num=$_GET['num'];
-//$sql="SELECT * FROM $tbl_name WHERE id='$id'";
-$sql= "SELECT $tbl_name.*, $upload_tbl_name.* FROM $tbl_name INNER JOIN $upload_tbl_name ON $tbl_name.file_id=$upload_tbl_name.file_id WHERE id='$id'" ;
+// show selected topic //$sql="SELECT * FROM $tbl_name WHERE id='$id'";
+$sql= "SELECT * FROM $tbl_name WHERE topic_id='$topic_id'" ;
 $result=mysqli_query($conn, $sql);
 $rows=mysqli_fetch_array($result);
 $view=$rows['view'];
 $user_id = $rows['user_id'];
 $category = $rows['category'];
 
+// show all files attached to selected topic
+$sql1= "SELECT * FROM $upload_tbl_name WHERE topic_id='$topic_id'" ;
+$result1=mysqli_query($conn, $sql1);
+$file_count=mysqli_num_rows($result1);
+
 // Count total data
 if($_SESSION['category'] == "my") {
 	$sql3 = "SELECT count(*) AS total FROM $tbl_name WHERE user_id = '$user_id'";
 	// Check data for prev / next button
-	$sql4="SELECT * FROM $tbl_name WHERE user_id='$user_id' AND id > '$id'";
-	$sql5="SELECT * FROM $tbl_name WHERE user_id='$user_id' AND id < '$id' ORDER BY id DESC";
+	$sql4="SELECT * FROM $tbl_name WHERE user_id='$user_id' AND topic_id > '$topic_id'";
+	$sql5="SELECT * FROM $tbl_name WHERE user_id='$user_id' AND topic_id < '$topic_id' ORDER BY topic_id DESC";
 	
 }
 else if($_SESSION['category'] == "all") {
 	$sql3 = "SELECT count(*) AS total FROM $tbl_name";
 	// Check data for prev / next button
-	$sql4="SELECT * FROM $tbl_name WHERE id > '$id'";
-	$sql5="SELECT * FROM $tbl_name WHERE id < '$id' ORDER BY id DESC";
+	$sql4="SELECT * FROM $tbl_name WHERE topic_id > '$topic_id'";
+	$sql5="SELECT * FROM $tbl_name WHERE topic_id < '$topic_id' ORDER BY topic_id DESC";
 	
 }
 else {
 	$sql3 = "SELECT count(*) AS total FROM $tbl_name WHERE category = '$category'";
 	// Check data for prev / next button
-	$sql4="SELECT * FROM $tbl_name WHERE category='$category' AND id > '$id'";
-	$sql5="SELECT * FROM $tbl_name WHERE category='$category' AND id < '$id' ORDER BY id DESC";
+	$sql4="SELECT * FROM $tbl_name WHERE category='$category' AND topic_id > '$topic_id'";
+	$sql5="SELECT * FROM $tbl_name WHERE category='$category' AND topic_id < '$topic_id' ORDER BY topic_id DESC";
 }
 $result3 = mysqli_query($conn, $sql3);
 $rows1= mysqli_fetch_array($result3);
@@ -44,16 +56,9 @@ $result5=mysqli_query($conn, $sql5);
 $rows_gt=mysqli_fetch_array($result4);
 $rows_lt=mysqli_fetch_array($result5);
 
-// // (조회수 0일때)if have no counter value set counter = 1
-// if(empty($view)){
-// 	$view=1;
-// 	$sql2="INSERT INTO $tbl_name(view) VALUES('$view') WHERE id='$id'";
-// 	$result2=mysqli_query($conn, $sql2);
-// }
-
 // (조회수)count more value
 $addview=$view+1;
-$sql2="UPDATE $tbl_name SET view='$addview' WHERE id='$id'";
+$sql2="UPDATE $tbl_name SET view='$addview' WHERE topic_id='$topic_id'";
 $result2=mysqli_query($conn, $sql2);
 
 mysqli_close($conn);
@@ -94,30 +99,38 @@ mysqli_close($conn);
 	?> 
 	<div class="container white p-1">
 		<!-- View Table -->
-		<table class="view_table table table-sm table-borderless mb-0">
+		<table class="view_table table table-borderless table-sm mb-0">
 			<thead>
 				<tr>
-					<td><b><?php echo $rows['topic']; ?></b></td>
-					<td class="text-right"><?php echo $rows['datetime']; ?></td>
+					<td colspan="3"><b><?php echo $rows['topic']; ?></b></td>
+					<td class="text-right" width="20%"><?php echo $rows['datetime']; ?></td>
 				</tr>
 				<tr>
-					<td colspan="2">작성자: <?php echo $rows['user_id']; ?></td>
+					<td colspan="4">작성자: <?php echo $rows['user_id']; ?></td>
 				</tr>
 				<tr>
-					<td colspan="2" class="border-bottom border-dark">첨부파일:&nbsp;<a class="file_info" href="<?php echo $rows['file_dir']; ?>" download hidden> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?></a></td>
+					<td width="10%" class="border-bottom border-dark d">첨부파일:</td>
+					<td colspan="3">
+						<?php 
+						while($rows_file=mysqli_fetch_array($result1)){ ?>
+							<a class="file_info" href="<?php echo $rows_file['file_dir']; ?>" download>
+								<i class="far fa-save"></i> &nbsp;<?php echo $rows_file['file_name']; ?>
+							</a><br>
+						<?php } ?>
+					</td>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td colspan="2"><?php echo $rows['detail']; ?></td>
+					<td colspan="4"><?php echo $rows['detail']; ?></td>
 				</tr>
 				<tr>
-					<td>
+					<td colspan="2" width="15%">
 						<button class="btn btn-sm btn-default p-2" id="next_btn">&lt</button>
 						<button class="btn btn-sm btn-default p-2" id="prev_btn">&gt</button>
 					</td>
-					<td class="text-right">
-						<button class="btn btn-sm btn-default" id="update_btn" hidden>수정</button>
+					<td colspan="2" class="text-right">
+						<button class="btn btn-sm btn-default" id="edit_btn" hidden>수정</button>
 						<button class="btn btn-sm btn-default" id="delete_btn" hidden>삭제</button>
 						<button class="btn btn-sm btn-default" onclick="location.href = 'view_main.php'">글목록</button>
 					</td>
@@ -125,65 +138,6 @@ mysqli_close($conn);
 			</tbody>
 		</table>
 		<!-- /View Table -->
-		<!-- Update Table -->
-		<table class="update_table table table-sm table-borderless mb-0" style="display: none;">
-			<!-- action= ....$_SERVER[PHP-SELF]... => Can be hacked. -->
-			<!-- !!! Must use htemlspecialchars !!! -->
-			<form enctype="multipart/form-data" id="form1" name="form1" method="post" action="s_edit.php">
-				<thead>
-					<tr>
-						<td><b>카테고리</b></td>
-						<td>:</td>
-						<td><select class="custom-select" name="category" id="category">
-							<option id="news" value="news">news</option>
-							<option id="music" value="music">music</option>
-							<option id="movie" value="movie">movie</option>
-							<option id="book" value="book">book</option>
-						</select></td>
-						<td class="text-right"><?php echo $rows['datetime']; ?></td>
-					</tr>
-					<tr>
-						<td >제목 </td>
-						<td>:</td>
-						<td><input class="form-control" name="topic" type="text" id="topic" value= "<?php echo $rows['topic']; ?>" autocomplete="off"/>
-						</td>
-						
-					</tr>
-					<tr>
-						<td >작성자 </td>
-						<td>:</td>
-						<td><input class="form-control" name="user_id" type="text" id="user_id" value= "<?php echo $rows['user_id']; ?>" disabled/><input name="user_id" value="<?php echo $_SESSION['user_id'];?>" type="hidden"/></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>첨부파일</td>
-						<td>:</td>
-						<td><a class="file_info" id="del_file" hidden> <i class="far fa-save"></i> &nbsp;<?php echo $rows['file_dir']; ?>&nbsp; ...<i class="far fa-trash-alt"></i></a><input name="file" id="file" type="file" hidden/></td>
-						<td class="d-none">
-							<input class="form-control" name="delOk" type="number" id="delOk" value="0"/>
-						</td>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td colspan="4">
-							<textarea class="form-control" name="detail" rows="3" id="ckeditor" autocomplete="off"><?php echo $rows['detail']; ?></textarea>
-						</td>
-						<td class="d-none">
-							<input class="form-control" name="id" type="text" id="id" value= "<?php echo $rows['id']; ?>"/>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="4" class="text-right">
-							<button class="btn btn-sm btn-default" type="submit" name="Submit">확인</button>
-							<button class="btn btn-sm btn-default" type="button" id="cancel_btn">취소</button>
-							<button class="btn btn-sm btn-default" type="button" onclick="location.href = 'view_main.php'">글목록</button>
-						</td>
-					</tr>
-				</tbody>
-			</form>
-		</table>
-		<!-- Update Table -->
 	</div>
 	<div class="container p-0 white-text text-right">
 		<?php echo $num?>/<?php echo $row_num?>
@@ -201,33 +155,28 @@ mysqli_close($conn);
 
 	<script>
 
-		//check login state
+		//check login state (button hidden)
 		if("<?php echo $_SESSION['user_id'];?>" != "" && "<?php echo $_SESSION['user_id'];?>" == "<?php echo $rows['user_id'];?>" ) {
 			$("#delete_btn").removeAttr("hidden");
-			$("#update_btn").removeAttr("hidden");
+			$("#edit_btn").removeAttr("hidden");
 		}
 
-
 		//edit category default selected
-		$('#<?php echo $rows['category'];?>').attr("selected","selected");
-		// Replace the <textarea id="editor1"> with a CKEditor
-  	// instance, using default configuration.
-  	CKEDITOR.replace('ckeditor');
+		$('#<?php echo $category;?>').attr("selected","selected");
 
   	$("#delete_btn").click( function () {
   		if(confirm("정말로 삭제하시겠습니까?"))
-  			location.href='s_delete.php?id=<?php echo $rows['id']; ?>';
+  			location.href='s_delete.php?topic_id=<?php echo $rows['topic_id']; ?>';
   	});
 
   	//update button click -> change view
-  	$("#update_btn").click( function () {
-  		$(".view_table").hide();
-  		$(".update_table").show();
+  	$("#edit_btn").click( function () {
+  		location.href="view_edit.php?topic_id=<?php echo $topic_id; ?>";
   	});
 
 		//cancel button click
 		$("#cancel_btn").click( function () {
-			location.href="view_topic.php?id=<?php echo $id; ?>&num=<?php echo $num;?>";
+			location.href="view_topic.php?topic_id=<?php echo $topic_id; ?>&num=<?php echo $num;?>";
 		});
 
 		//button disability
@@ -236,29 +185,15 @@ mysqli_close($conn);
 		if(<?php echo $num?> == <?php echo $row_num?>)
 			$("#prev_btn").prop('disabled',true);
 
-		//file link visibility
-		if('<?php echo $rows['file_id'];?>' != '0')
-		{
-			$('.file_info').removeAttr("hidden");
-			//$('#file').removeAttr("hidden");
-		}
-
-		//delete attached file
-		$("#del_file").click( function () {
-			$('.file_info').addClass("d-none");
-			$('#file').removeAttr("hidden");
-			$('#delOk').val(1);
-		});
-
 		//<<<
 		$("#next_btn").click( function () {
-			location.href='view_topic.php?id=<?php echo $rows_gt['id'];?>&num=<?php echo $num-1;?>';
+			location.href='view_topic.php?topic_id=<?php echo $rows_gt['topic_id'];?>&num=<?php echo $num-1;?>';
 			return;
 		});
 
 		//>>>
 		$("#prev_btn").click( function () {
-			location.href='view_topic.php?id=<?php echo $rows_lt['id'];?>&num=<?php echo $num+1;?>';
+			location.href='view_topic.php?topic_id=<?php echo $rows_lt['topic_id'];?>&num=<?php echo $num+1;?>';
 			return;
 		});
 	</script>

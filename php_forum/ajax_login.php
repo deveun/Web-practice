@@ -15,6 +15,7 @@ $rows_num = mysqli_num_rows($result);
 if($rows_num == 1) {
 	$_SESSION['user_name'] = $rows['user_name'];
 	$_SESSION['user_id'] = $rows['user_id'];
+	$_SESSION['user_grade'] = $rows['user_grade'];
 	$res['res']	= true;
 }
 

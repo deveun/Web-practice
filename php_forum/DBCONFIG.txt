@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- 생성 시간: 19-01-24 11:41
+-- 생성 시간: 19-01-28 18:19
 -- 서버 버전: 10.1.37-MariaDB
 -- PHP 버전: 7.3.0
 
@@ -25,27 +25,30 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- 테이블 구조 `fquestions`
+-- 테이블 구조 `forum`
 --
 
-CREATE TABLE `fquestions` (
-  `id` int(4) NOT NULL,
+CREATE TABLE `forum` (
+  `topic_id` int(11) NOT NULL,
   `category` varchar(20) NOT NULL,
   `topic` varchar(255) NOT NULL DEFAULT '',
   `detail` longtext NOT NULL,
   `user_id` varchar(80) NOT NULL,
   `email` varchar(65) NOT NULL DEFAULT '',
   `datetime` varchar(25) NOT NULL DEFAULT '',
-  `view` int(4) NOT NULL DEFAULT '0',
-  `file_id` varchar(255) DEFAULT NULL
+  `view` int(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- 테이블의 덤프 데이터 `fquestions`
+-- 테이블의 덤프 데이터 `forum`
 --
 
-INSERT INTO `fquestions` (`id`, `category`, `topic`, `detail`, `user_id`, `email`, `datetime`, `view`, `file_id`) VALUES
-(14, 'news', 'a', '<p>a</p>\r\n', 'id1', 'a', '19/01/24 11:39:08', 5, '0');
+INSERT INTO `forum` (`topic_id`, `category`, `topic`, `detail`, `user_id`, `email`, `datetime`, `view`) VALUES
+(124, 'news', 'dsa', '', 'id2', 'dsa', '19/01/28 18:11:42', 3),
+(125, 'news', 'asd', '', 'id2', 'asd', '19/01/28 18:15:48', 1),
+(126, 'news', 'd', '', 'id2', 'ddd', '19/01/28 18:16:23', 0),
+(127, 'news', 'd', '<p>asd</p>\r\n', 'id2', 'd', '19/01/28 18:16:34', 0),
+(128, 'news', 'ㅂㅈㄷ', '<p>ㅂㅈㄷ</p>\r\n', 'id2', '아아아', '19/01/28 18:17:05', 1);
 
 -- --------------------------------------------------------
 
@@ -54,16 +57,25 @@ INSERT INTO `fquestions` (`id`, `category`, `topic`, `detail`, `user_id`, `email
 --
 
 CREATE TABLE `upload_file` (
-  `file_id` varchar(255) NOT NULL,
-  `file_dir` varchar(255) DEFAULT NULL
+  `file_id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  `file_name` varchar(40) NOT NULL,
+  `file_type` varchar(40) NOT NULL,
+  `file_dir` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- 테이블의 덤프 데이터 `upload_file`
 --
 
-INSERT INTO `upload_file` (`file_id`, `file_dir`) VALUES
-('0', 'no_file');
+INSERT INTO `upload_file` (`file_id`, `topic_id`, `file_name`, `file_type`, `file_dir`) VALUES
+(141, 124, 'image', 'jpg', 'uploads/124/image20190128.jpg'),
+(144, 126, 'image', 'jpg', 'uploads/126/image20190128.jpg'),
+(145, 126, 'sam', 'jpg', 'uploads/126/sam20190128.jpg'),
+(146, 126, 'sample1_l', 'jpg', 'uploads/126/sample1_l20190128.jpg'),
+(147, 127, 'image', 'jpg', 'uploads/127/image20190128.jpg'),
+(148, 127, 'sam', 'jpg', 'uploads/127/sam20190128.jpg'),
+(149, 127, 'sample1_l', 'jpg', 'uploads/127/sample1_l20190128.jpg');
 
 -- --------------------------------------------------------
 
@@ -72,44 +84,49 @@ INSERT INTO `upload_file` (`file_id`, `file_dir`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `account_id` int(11) NOT NULL,
   `user_id` varchar(80) NOT NULL,
   `user_pw` char(41) NOT NULL,
-  `user_name` varchar(50) NOT NULL
+  `user_name` varchar(50) NOT NULL,
+  `user_grade` int(11) NOT NULL DEFAULT '1',
+  `post` varchar(20) NOT NULL,
+  `address` varchar(80) NOT NULL,
+  `extra_address` varchar(80) NOT NULL,
+  `detail_address` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- 테이블의 덤프 데이터 `users`
 --
 
-INSERT INTO `users` (`id`, `user_id`, `user_pw`, `user_name`) VALUES
-(41, 'id1', '*01785BBB277956A280FEBA326E468494D2A64CF1', 'user1'),
-(42, 'id2', '*6BA08BDD669B27CB263F9730FF8CAC21247D9EC2', 'user2'),
-(43, 'id3', '*D20160432F5D84F2AC8B20DE62FCF6142EBB3FE6', 'user3');
+INSERT INTO `users` (`account_id`, `user_id`, `user_pw`, `user_name`, `user_grade`, `post`, `address`, `extra_address`, `detail_address`) VALUES
+(47, 'id1', '*01785BBB277956A280FEBA326E468494D2A64CF1', '김김김', 2, '06353', '서울 강남구 광평로 185', ' (수서동)', '아파트'),
+(48, 'id2', '*6BA08BDD669B27CB263F9730FF8CAC21247D9EC2', '최최최', 2, '06267', '서울 강남구 강남대로 238', ' (도곡동)', '가나다'),
+(49, 'id3', '*D20160432F5D84F2AC8B20DE62FCF6142EBB3FE6', '등급테스트', 2, '', '', '', '아아');
 
 --
 -- 덤프된 테이블의 인덱스
 --
 
 --
--- 테이블의 인덱스 `fquestions`
+-- 테이블의 인덱스 `forum`
 --
-ALTER TABLE `fquestions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `file_id` (`file_id`),
+ALTER TABLE `forum`
+  ADD PRIMARY KEY (`topic_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
 -- 테이블의 인덱스 `upload_file`
 --
 ALTER TABLE `upload_file`
-  ADD PRIMARY KEY (`file_id`);
+  ADD PRIMARY KEY (`file_id`),
+  ADD KEY `topic_id` (`topic_id`);
 
 --
 -- 테이블의 인덱스 `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`account_id`),
   ADD UNIQUE KEY `user_id` (`user_id`) USING BTREE;
 
 --
@@ -117,27 +134,38 @@ ALTER TABLE `users`
 --
 
 --
--- 테이블의 AUTO_INCREMENT `fquestions`
+-- 테이블의 AUTO_INCREMENT `forum`
 --
-ALTER TABLE `fquestions`
-  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+ALTER TABLE `forum`
+  MODIFY `topic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
+
+--
+-- 테이블의 AUTO_INCREMENT `upload_file`
+--
+ALTER TABLE `upload_file`
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
 
 --
 -- 테이블의 AUTO_INCREMENT `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- 덤프된 테이블의 제약사항
 --
 
 --
--- 테이블의 제약사항 `fquestions`
+-- 테이블의 제약사항 `forum`
 --
-ALTER TABLE `fquestions`
-  ADD CONSTRAINT `fquestions_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `upload_file` (`file_id`),
-  ADD CONSTRAINT `fquestions_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+ALTER TABLE `forum`
+  ADD CONSTRAINT `forum_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- 테이블의 제약사항 `upload_file`
+--
+ALTER TABLE `upload_file`
+  ADD CONSTRAINT `upload_file_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `forum` (`topic_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

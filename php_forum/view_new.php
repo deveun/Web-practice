@@ -74,7 +74,7 @@
 					<tr>
 						<td class="text-right"><b>파일 첨부</b></td>
 						<td>:</td>
-						<td><input name="file" id="file" type="file"/></td>
+						<td><input class="add_file" name="file[]" type="file" multiple/></td>
 					</tr>
 					<tr>
 						<td class="text-right d"><b>내용</b></td>
@@ -102,11 +102,20 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 	<!-- /JavaScript CDN LIST ================================== -->
 	<script>
-		// Replace the <textarea id="editor1"> with a CKEditor
-    // instance, using default configuration.
-    CKEDITOR.replace('ckeditor');
-  </script>
-  <!-- ======================================================= -->
+
+		//limit upload_file number
+		$(".add_file").on("change", function() {
+			if($(".add_file")[0].files.length > 10) {
+				alert("최대 10개까지 첨부 가능합니다.");
+				$(this).val('');
+			}
+		});
+
+	// Replace the <textarea id="editor1"> with a CKEditor
+		// instance, using default configuration.
+		CKEDITOR.replace('ckeditor');
+	</script>
+	<!-- ======================================================= -->
 
 </body>
 </html>

@@ -34,13 +34,17 @@
 	else { echo "	<script> alert('잘못된 접근입니다.');
 	location.href='index.php';	</script>";  }
 	?> 
-	<div class="container white">
+	<div class="container white py-3">
 		<table class="table table-sm col-6 mx-auto">
 			<tr><td >이름: </td><td id="info_name"></td>	</tr>
 			<tr><td>우편번호: </td><td id="info_post"></td></tr>
 			<tr><td>주소: </td><td id="info_addr"></td></tr>
 			<tr><td>상세주소: </td><td id="info_detailaddr"></td></tr>
 		</table>
+		<div class="d-flex justify-content-center">
+			<button class="btn btn-default btn-sm m-2" onclick="location.href='view_edit_myinfo.php'">수정</button>
+			<button class="btn btn-default btn-sm m-2" onclick="location.href='view_main.php'">확인</button>
+		</div>
 	</div>
 
 	<!-- ========================================================== -->

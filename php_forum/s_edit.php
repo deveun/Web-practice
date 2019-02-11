@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		//file name (without extension)
 		$file_realname[$i] = pathinfo(basename($_FILES["file"]["name"][$i]),PATHINFO_FILENAME);
 		//Datebase file save name (without extension)
-		$file_savename[$i] = $file_realname[$i].date("Ymd");
+		$file_savename[$i] = date("YmdGis");
 		//(full file name) directory + filename + extension 
 		$file_path[$i] = $root_dir.$topic_id."/".$file_savename[$i].'.'.$file_type[$i];
 		
@@ -140,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	echo "
 	<script> 
 	alert('수정완료');
-	//document.location.href='view_main.php';
+	document.location.href='view_main.php';
 	</script>"; 
 }
 	/////////////////Save file to server /uploads directory

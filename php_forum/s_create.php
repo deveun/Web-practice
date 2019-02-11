@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		//file name (without extension)
 		$file_realname[$i] = pathinfo(basename($_FILES["file"]["name"][$i]),PATHINFO_FILENAME);
 		//Datebase file save name (without extension)
-		$file_savename[$i] = $file_realname[$i].date("Ymd");
+		$file_savename[$i] = date("YmdGis");
 		//(full file name) directory + filename + extension 
 		$file_path[$i] = $root_dir.$new_id."/".$file_savename[$i].'.'.$file_type[$i];
 		

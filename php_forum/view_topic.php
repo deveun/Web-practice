@@ -113,7 +113,7 @@ mysqli_close($conn);
 					<td colspan="3">
 						<?php 
 						while($rows_file=mysqli_fetch_array($result1)){ ?>
-							<a class="file_info" href="<?php echo $rows_file['file_dir']; ?>" download>
+							<a class="file_info" href="<?php echo $rows_file['file_dir']; ?>" download="<?php echo $rows_file['file_name'].'.'.$rows_file['file_type']; ?>">
 								<i class="far fa-save"></i> &nbsp;<?php echo $rows_file['file_name']; ?>
 							</a><br>
 						<?php } ?>
